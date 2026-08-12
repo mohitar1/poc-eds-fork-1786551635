@@ -192,19 +192,36 @@ work independently of whether the fork's backend is set up yet. Do not
 defer this phase waiting on Phase B — it doesn't need it.
 
 **Required tool — check first, before A.1.** This phase drives the excat
-design skill **`excat-complete-design-expert`** (from the Adobe Experience
-Catalyst / `aem-excat-plugin`). Confirm it is available in this session
-(it appears in the skills list; its own trigger phrases include "migrate
-design", "extract design tokens", "style the blocks").
+design skill **`excat-complete-design-expert`** (plugin `excat`, from the
+`excat-marketplace` shipped by the Adobe Experience Catalyst
+`aem-excat-plugin`). Don't assume it's missing and don't assume it's
+present — actually determine which of three states you're in, because
+"installed globally" and "enabled for this project" are different things:
 
-- **If it is available** → proceed; A.2 invokes it in Complete Migration
-  mode.
-- **If it is NOT available** → **stop and do not hand-roll the rebrand.**
-  Editing `styles.css` tokens / sweeping hex manually is not a substitute
-  for this skill and silently diverges from the supported path. Tell the
-  operator the excat plugin must be installed in this session first (the
-  `aem-excat-plugin` marketplace from the `aem-experience-catalyst` repo),
-  and pause Phase A until it is. Mark the rebrand phase `blocked`.
+1. **Skill invokable now** — `excat-complete-design-expert` appears in
+   this session's available-skills list. → Proceed; A.2 invokes it in
+   Complete Migration mode.
+
+2. **Plugin installed but not enabled for this project** — it's in
+   `~/.claude/plugins/installed_plugins.json` (look for
+   `excat@excat-marketplace`) but the skill isn't in the session list.
+   This is the common case. → **Guide the operator to enable it**, don't
+   tell them to install: have them run `/plugin` (Manage plugins →
+   `excat-marketplace` → `excat` → Enable) for this project, or add
+   `excat@excat-marketplace` to `enabledPlugins` for this project, then
+   restart the session so the skill loads. To check install state you may
+   read `installed_plugins.json` and `known_marketplaces.json`.
+
+3. **Not installed at all** — no `excat@excat-marketplace` entry. → Have
+   the operator add the marketplace and install: `/plugin marketplace add
+   <path-or-repo of aem-excat-plugin/excat-marketplace>` then
+   `/plugin install excat@excat-marketplace`, then enable per state 2.
+
+In states 2 and 3, **stop and do not hand-roll the rebrand** — editing
+`styles.css` / sweeping hex manually is not a substitute for this skill
+and silently misses the content rewrite and asset-color sweep. Mark the
+rebrand phase `blocked`, tell the operator exactly which state they're in
+and the one action to fix it, and pause Phase A until the skill loads.
 
 This phase is more than tokens: the content-register rewrite and the
 hardcoded-asset-color sweep (A.3) are this phase's own job, wrapped around

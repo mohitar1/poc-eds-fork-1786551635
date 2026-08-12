@@ -12,19 +12,19 @@
 
 :root {
   /* Brand palette (semantic tokens — single source of truth) */
-  --light-color: #F4E9DC;
-  --dark-color: #2C2C2C;
-  --text-color: #58181D;
-  --text-primary: #58181D;
-  --link-color: #58181D;
-  --link-hover-color: #00647D;
-  --primary-color: #00647D;
-  --primary-color-hover: #004d61;
-  --color-red: #A33532;
-  --color-dark-red: #95351D;
-  --accent-secondary: #DC6E52;
-  --accent-tertiary: #EBA439;
-  --secondary-color: #95351D;
+  --light-color: #F5F5F5;
+  --dark-color: #191919;
+  --text-color: #191919;
+  --text-primary: #191919;
+  --link-color: #EC0000;
+  --link-hover-color: #23527C;
+  --primary-color: #EC0000;
+  --primary-color-hover: #C40000;
+  --color-red: #EC0000;
+  --color-dark-red: #C40000;
+  --accent-secondary: #23527C;
+  --accent-tertiary: #FFCC00;
+  --secondary-color: #191919;
 
   /* Neutral & shape tokens */
   --color-neutral-50: #fff;
@@ -66,8 +66,8 @@
   --color-dark-blue: var(--primary-color);
 
   /* fonts */
-  --body-font-family: var(--type-base-font-family);
-  --heading-font-family: baskerville, serif;
+  --body-font-family: inter, inter-fallback, sans-serif;
+  --heading-font-family: inter, inter-fallback, sans-serif;
 
   /* font sizes */
   --body-font-size-m: 18px;
@@ -152,6 +152,12 @@
   src: local('Arial');
 }
 
+@font-face {
+  font-family: inter-fallback;
+  size-adjust: 107%;
+  src: local('Arial');
+}
+
 html {
   font-size: 62.5%;
 }
@@ -217,20 +223,20 @@ body:has(.section.welcome) > main {
   align-items: center;
 }
 
-/* Coffee-bean brand mark (its own paragraph) */
-.section.welcome p:has(.icon-frescopa-beans) {
+/* Brand mark (its own paragraph) */
+.section.welcome p:has(.icon-santander-mark) {
   margin: 0 0 var(--spacing-small);
   max-width: none;
 }
 
-.section.welcome .icon-frescopa-beans {
+.section.welcome .icon-santander-mark {
   display: inline-flex;
   width: 64px;
   height: 64px;
 }
 
-.section.welcome .icon-frescopa-beans img,
-.section.welcome .icon-frescopa-beans svg {
+.section.welcome .icon-santander-mark img,
+.section.welcome .icon-santander-mark svg {
   width: 64px;
   height: 64px;
 }
@@ -613,16 +619,16 @@ button.button:disabled:hover {
 a.button.secondary,
 button.button.secondary,
 button.secondary {
-  background-color: #95351D;
-  border-color: #95351D;
+  background-color: #23527C;
+  border-color: #23527C;
   color: #fff;
 }
 
 a.button.secondary:hover,
 button.button.secondary:hover,
 button.secondary:hover {
-  background-color: #7a2b17;
-  border-color: #7a2b17;
+  background-color: #1a3e5e;
+  border-color: #1a3e5e;
   color: #fff;
 }
 
@@ -810,7 +816,7 @@ main .section.full-width > div {
   border-radius: 12px;
 }
 
-/* Frescopa landing hero: compact, elegant, beige; the search pill is the focal point */
+/* Landing hero: compact, elegant, light; the search pill is the focal point */
 main .section.search-hero {
   background: var(--light-color) url('backgrounds/big.svg') no-repeat center top / cover;
   color: var(--text-color);

@@ -341,7 +341,7 @@
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - var(--nav-height, 108px));
-  background-color: #FBF1EA;
+  background-color: var(--light-color);
 }
 
 @media (width <= 1439px) {

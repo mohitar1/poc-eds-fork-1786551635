@@ -13,6 +13,7 @@ secret.env
 .dev.vars
 .secrets
 .wrangler/
+token.env
 
 # Generated configuration files with sensitive data
 react/dist/config.js

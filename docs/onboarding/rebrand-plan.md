@@ -84,11 +84,19 @@ scope so the platform's own skill-selection handles it correctly in a
 single pass:
 
 1. Design tokens and typography, via the excat design skill
-   `excat-complete-design-expert` (from `aem-excat-plugin`), in its
-   Complete Migration mode — not hand-edited `styles.css`. Phase A is
-   gated on this skill being available in the session; if it isn't, the
-   skill stops and asks for the excat plugin to be installed rather than
-   improvising a manual rebrand.
+   `excat-complete-design-expert` (plugin `excat@excat-marketplace`, from
+   `aem-excat-plugin`), in its Complete Migration mode — not hand-edited
+   `styles.css`. Phase A gates on this skill being *invokable* and
+   distinguishes three states, because "installed globally" ≠ "enabled for
+   this project": (a) skill in the session list → proceed; (b) plugin in
+   `~/.claude/plugins/installed_plugins.json` but not enabled here → guide
+   the operator to **enable** it via `/plugin` and restart, don't tell
+   them to reinstall; (c) not installed → add the marketplace + install,
+   then enable. In (b)/(c) the skill stops and blocks rather than
+   improvising a manual rebrand. The earlier "just ask to install it"
+   guidance was wrong for the common case (b): a live test showed excat
+   v2.1.6 already installed at user scope but not enabled for the project,
+   so the fix is enablement, not installation.
 2. Hardcoded asset colors, named explicitly and separately from step 1 —
    icon SVGs and background images can carry literal color values that no
    CSS change reaches, and the transcript shows exactly this being missed
