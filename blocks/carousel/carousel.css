@@ -125,7 +125,7 @@
 .carousel .carousel-slide-indicator button:disabled,
 .carousel .carousel-slide-indicator button:hover,
 .carousel .carousel-slide-indicator button:focus-visible {
-    background-color: #d11700;
+    background-color: var(--primary-color);
 }
 
 /* Typography - white text on black background */
