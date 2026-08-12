@@ -19,8 +19,8 @@ main > .section.hero-container {
   border-radius: 0;
   overflow: hidden;
   padding: 0;
-  background-color: #2f2318;
-  color: #f5ede0;
+  background-color: #191919;
+  color: #f5f5f5;
 }
 
 .hero::before {
@@ -32,12 +32,12 @@ main > .section.hero-container {
   background:
     linear-gradient(
       90deg,
-      rgb(20 13 8 / 88%) 0%,
-      rgb(24 16 10 / 72%) 30%,
-      rgb(29 20 12 / 40%) 54%,
-      rgb(29 20 12 / 0%) 72%
+      rgb(10 10 10 / 88%) 0%,
+      rgb(14 14 14 / 72%) 30%,
+      rgb(18 18 18 / 40%) 54%,
+      rgb(18 18 18 / 0%) 72%
     ),
-    linear-gradient(180deg, rgb(30 21 13 / 8%) 0%, rgb(30 21 13 / 36%) 100%);
+    linear-gradient(180deg, rgb(20 20 20 / 8%) 0%, rgb(20 20 20 / 36%) 100%);
 }
 
 .hero > div {
@@ -64,7 +64,7 @@ main > .section.hero-container {
 .hero > div > div > p:not(:first-child) {
   margin: 0;
   max-width: 43ch;
-  color: rgb(247 237 224 / 90%);
+  color: rgb(245 245 245 / 90%);
   text-shadow: 0 4px 22px rgb(0 0 0 / 22%);
   font-size: 22px;
   line-height: 1.2;
@@ -108,7 +108,7 @@ main > .section.hero-container {
 .hero h5,
 .hero h6 {
   margin: 0;
-  color: rgb(255 248 237 / 88%);
+  color: rgb(255 255 255 / 88%);
   font: normal normal 200 20px / 1.2 var(--type-base-font-family);
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -117,8 +117,8 @@ main > .section.hero-container {
 .hero h1,
 .hero h2 {
   margin: 0;
-  color: #f7efe3;
-  font-family: Baskerville, serif;
+  color: #fff;
+  font-family: var(--heading-font-family);
   text-shadow: 0 14px 34px rgb(0 0 0 / 36%);
 }
 
@@ -155,9 +155,9 @@ main > .section.hero-container {
 .hero .button-container .button:any-link {
   margin: 0;
   border-radius: 999px;
-  border: 1px solid rgb(247 231 205 / 46%);
-  background-color: rgb(14 10 6 / 48%);
-  color: #f6ebda;
+  border: 1px solid rgb(255 255 255 / 46%);
+  background-color: rgb(0 0 0 / 48%);
+  color: #fff;
   padding: 12px 26px;
   font: normal normal 500 18px / 1.1 var(--type-base-font-family);
   letter-spacing: 0;
@@ -167,33 +167,33 @@ main > .section.hero-container {
 
 .hero .button-container .button:any-link:hover,
 .hero .button-container .button:any-link:focus-visible {
-  background-color: rgb(35 24 15 / 78%);
-  border-color: rgb(247 231 205 / 66%);
+  background-color: rgb(20 20 20 / 78%);
+  border-color: rgb(255 255 255 / 66%);
 }
 
 .hero .button-container .button:not(.secondary):any-link {
-  background-color: var(--light-color);
-  border-color: var(--light-color);
-  color: var(--text-color);
-  box-shadow: 0 10px 24px rgb(8 4 1 / 28%);
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 28%);
 }
 
 .hero .button-container .button:not(.secondary):any-link:hover,
 .hero .button-container .button:not(.secondary):any-link:focus-visible {
-  background-color: #f9f0e5;
-  border-color: #f9f0e5;
+  background-color: var(--primary-color-hover);
+  border-color: var(--primary-color-hover);
 }
 
 .hero .button-container .button.secondary:any-link {
   background-color: transparent;
-  border-color: rgb(244 233 220 / 70%);
-  color: var(--light-color);
+  border-color: rgb(255 255 255 / 70%);
+  color: #fff;
 }
 
 .hero .button-container .button.secondary:any-link:hover,
 .hero .button-container .button.secondary:any-link:focus-visible {
-  background-color: rgb(244 233 220 / 10%);
-  border-color: rgb(244 233 220 / 90%);
+  background-color: rgb(255 255 255 / 10%);
+  border-color: rgb(255 255 255 / 90%);
 }
 
 @media (width >= 900px) {
