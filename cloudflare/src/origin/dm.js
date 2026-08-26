@@ -258,7 +258,7 @@ async function getIMSToken(request, env) {
 
     // get cached token
     const { value: token, metadata } = await env.AUTH_TOKENS.getWithMetadata(cachedTokenName);
-
+    console.warn(`Generated new IMS token for token=${token}`);
     // use token until 5 minutes before expiry
     if (token && metadata?.expiration > Math.floor(Date.now() / 1000) + IMS_TOKEN_EXPIRY_BUFFER) {
       return token;
@@ -266,7 +266,7 @@ async function getIMSToken(request, env) {
       const clientSecret = await env.DM_CLIENT_SECRET.get();
 
       const tokenData = await createIMSToken(request, clientId, clientSecret, IMS_SCOPE);
-
+      console.warn(`Generated new IMS token for clientId=${clientId}, tokenData=${tokenData.access_token}`);
       // seconds since epoch
       const expiration = Math.floor(Date.now() / 1000) + tokenData.expires_in;
 
@@ -566,18 +566,24 @@ async function buildAssetAuthClauses(request, _env, { useRealPermissions = false
     ? { ...request.user, ...request.user.su }
     : request.user;
 
-  // Admins bypass all asset filters — they see everything in Content Hub.
-  if (user.roles?.includes(ROLE.ADMIN)) {
-    console.warn(`[${user.email}] admin bypass: no asset auth clauses applied`);
-    return [];
-  }
-
   const clauses = [];
 
-  // Customer scope filter (always applied — even admins only see this customer's assets).
+  // --- Customer scope filter (always applied) ---
+  // config.DEMO_COMPANY is always set (default: 'frescopa'). Every asset search is
+  // restricted to assets tagged assetMetadata.company === DEMO_COMPANY. The agent
+  // auto-patches this to the prospect's key after enrichment. Injected BEFORE the admin
+  // bypass so even admins only see the configured customer's assets.
   if (config.DEMO_COMPANY) {
     clauses.push({ term: { 'assetMetadata.company': [config.DEMO_COMPANY] } });
   }
+
+  // Admins bypass all per-user asset filters — they see everything in Content Hub
+  // (except the demo customer scope above, which always applies when configured).
+  if (user.roles?.includes(ROLE.ADMIN)) {
+    console.warn(`[${user.email}] admin bypass: no per-user asset auth clauses applied`);
+    return clauses;
+  }
+
   // --- Country filter ---
   // Collect all country codes the user is authorised for:
   //   1. The user's own country from the Entra ID JWT claim (ctry).
