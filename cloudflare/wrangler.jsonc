@@ -44,7 +44,7 @@
         // --var at deploy time) so a var-less `wrangler deploy` cannot wipe it
         // and leave env.HELIX_ORIGIN undefined -> originHelix crash -> 1101.
         // index.js swaps .aem.live -> .aem.page at runtime for the preview host.
-        "HELIX_ORIGIN": "https://main--assethub-spark--aem-showcase.aem.live"
+        "HELIX_ORIGIN": "https://main--poc-eds-fork-1786551635--mohitar1.aem.live"
       },
       "kv_namespaces": [
         {

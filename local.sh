@@ -4,7 +4,7 @@
 
 # Run full local development stack
 
-AEM_PAGES_URL=${AEM_PAGES_URL:-https://main--assethub-spark--aem-showcase.aem.page}
+AEM_PAGES_URL=${AEM_PAGES_URL:-https://main--poc-eds-fork-1786551635--mohitar1.aem.page}
 AEM_ENV_ID=${AEM_ENV_ID:-p203220-e2129061}
 
 # https://www.aem.live/developer/cli-reference#general-options
