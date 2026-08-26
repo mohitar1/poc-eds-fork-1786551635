@@ -14,6 +14,9 @@ const config = {
   // AEM environment (Program-Environment) id for the backing DM tenant.
   AEM_ENV_ID: 'p203220-e2129061',
 
+  // Demo customer scope: search restricted to assetMetadata.company === DEMO_COMPANY.
+  DEMO_COMPANY: 'urbn',
+
   // Content Optimization Agent environment. COA is called with the same DM
   // S2S technical account/token as Dynamic Media, so this must match whatever
   // IMS environment that account's credentials were issued against — not an

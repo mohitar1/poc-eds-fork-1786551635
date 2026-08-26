@@ -574,6 +574,10 @@ async function buildAssetAuthClauses(request, _env, { useRealPermissions = false
 
   const clauses = [];
 
+  // Customer scope filter (always applied — even admins only see this customer's assets).
+  if (config.DEMO_COMPANY) {
+    clauses.push({ term: { 'assetMetadata.company': [config.DEMO_COMPANY] } });
+  }
   // --- Country filter ---
   // Collect all country codes the user is authorised for:
   //   1. The user's own country from the Entra ID JWT claim (ctry).
