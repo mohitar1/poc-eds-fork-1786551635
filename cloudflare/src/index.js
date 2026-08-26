@@ -15,6 +15,7 @@ import { analyticsApi, searchMetricsApi } from './api/analytics';
 import { auditGetExportCsv, auditGetSummary, auditPostEvent } from './api/audit';
 import { notificationsApi } from './api/notifications';
 import { authRouter, withAuthentication } from './auth';
+import { originCoa, originCoaImage } from './origin/coa';
 import { originDynamicMedia } from './origin/dm';
 import { originHelix } from './origin/helix';
 import { isUserExcluded, parsePageExclusions } from './origin/page-access';
@@ -24,9 +25,9 @@ import { cors } from './util/itty';
 
 // Shared CORS origins
 const allowedOrigins = [
-  'https://spark.aem.media',
-  'https://spark-eds.sparkedsmedia.workers.dev',
-  /https:\/\/.*-spark-eds\.sparkedsmedia\.workers\.dev$/,
+  'https://frescopamedia.com',
+  'https://preview.frescopamedia.com',
+  /https:\/\/.*\.dev\.frescopamedia\.com$/,
   /http:\/\/localhost:.*/,
 ];
 
@@ -47,7 +48,7 @@ function withTlsCheck(request) {
 /** Switch to AEM preview content for preview hostnames. */
 function withPreviewOrigin(request, env) {
   const { hostname } = new URL(request.url);
-  if (hostname.startsWith('preview-') && hostname.endsWith('.workers.dev')) {
+  if (hostname === 'preview.frescopamedia.com') {
     request.helixOrigin = env.HELIX_ORIGIN.replace('.aem.live', '.aem.page');
     console.info(`Preview hostname detected: ${hostname}, using Helix origin: ${request.helixOrigin}`);
   }
@@ -111,6 +112,10 @@ router
   // dynamic media (asset proxy, search, metadata)
   .all('/api/adobe/assets/*', originDynamicMedia)
 
+  // Content Optimization Agent (AI image renditions)
+  .post('/api/adobe/coa/generate', originCoa)
+  .get('/api/adobe/coa/image', originCoaImage)
+
   // Notifications API
   .all('/api/messages/*', notificationsApi)
   .all('/api/messages', notificationsApi)
@@ -130,6 +135,10 @@ router
   // all other routes: serve from Helix with page-level access control
   .all('*', async (request, env) => {
     const response = await originHelix(request, env);
+
+    if (response.status === 404) {
+      return Response.redirect(`${new URL(request.url).origin}/404.html`, 302);
+    }
 
     const contentType = response.headers.get('content-type') || '';
     if (!contentType.includes('text/html') || !request.user) {

@@ -65,11 +65,55 @@ function extractTaxonomyPaths(fieldValue) {
 }
 
 /**
+ * Check a single `not` clause entry (`notClause.term` or `notClause.exists`) against
+ * asset metadata.
+ * @param {Object} notClause - One entry from a `not` clause array
+ * @param {Object} assetMetadata - The assetMetadata object from API response
+ * @returns {{ violated: boolean, reason?: string }} Result with violation status and reason
+ */
+function checkNotClauseEntry(notClause, assetMetadata) {
+  if (notClause.term) {
+    for (const [fieldPath, deniedValues] of Object.entries(notClause.term)) {
+      // Field path is like 'assetMetadata.custom:brand', extract the field name
+      const fieldName = fieldPath.replace(/^assetMetadata\./, '');
+      const assetPaths = extractTaxonomyPaths(assetMetadata[fieldName]);
+
+      // Check if any asset value is in the denied list
+      for (const assetPath of assetPaths) {
+        if (deniedValues.includes(assetPath)) {
+          return {
+            violated: true,
+            reason: `Denied ${fieldName} -- Asset has "${assetPath}" which is in denied list [${deniedValues.join(', ')}]`,
+          };
+        }
+      }
+    }
+  }
+
+  // NOT EXISTS - asset must NOT have a value for the field (i.e. field must be absent)
+  if (notClause.exists) {
+    const fieldPath = notClause.exists.field;
+    const fieldName = fieldPath.replace(/^assetMetadata\./, '');
+    const hasValue = extractTaxonomyPaths(assetMetadata[fieldName]).length > 0;
+    if (hasValue) {
+      return {
+        violated: true,
+        reason: `Denied ${fieldName} -- Asset has a value but rule requires it to be absent`,
+      };
+    }
+  }
+
+  return { violated: false };
+}
+
+/**
  * Check if asset metadata violates the authorization clauses.
  *
- * Evaluates two types of clauses:
- * - `not` clauses: Asset must NOT have any of the specified values (denial)
+ * Evaluates these clause types:
+ * - `not` clauses: Asset must NOT have any of the specified values (denial); a `not` clause
+ *   may also wrap an `exists` check to require the field be entirely absent
  * - `term` clauses: Asset must have at least one of the specified values (allowance)
+ * - `or` clauses: At least one sub-clause must pass (evaluated recursively)
  *
  * Asset metadata fields can have different formats:
  * - `custom:brand`: Array of objects with repo:ancestors
@@ -124,22 +168,9 @@ function checkAssetMetadataAuthorization(authClauses, assetMetadata) {
     // Handle NOT clauses - asset must NOT have any of the denied values
     if (clause.not && Array.isArray(clause.not)) {
       for (const notClause of clause.not) {
-        if (notClause.term) {
-          for (const [fieldPath, deniedValues] of Object.entries(notClause.term)) {
-            // Field path is like 'assetMetadata.custom:brand', extract the field name
-            const fieldName = fieldPath.replace(/^assetMetadata\./, '');
-            const assetPaths = extractTaxonomyPaths(assetMetadata[fieldName]);
-
-            // Check if any asset value is in the denied list
-            for (const assetPath of assetPaths) {
-              if (deniedValues.includes(assetPath)) {
-                return {
-                  violated: true,
-                  reason: `Denied ${fieldName} -- Asset has "${assetPath}" which is in denied list [${deniedValues.join(', ')}]`,
-                };
-              }
-            }
-          }
+        const result = checkNotClauseEntry(notClause, assetMetadata);
+        if (result.violated) {
+          return result;
         }
       }
       continue;

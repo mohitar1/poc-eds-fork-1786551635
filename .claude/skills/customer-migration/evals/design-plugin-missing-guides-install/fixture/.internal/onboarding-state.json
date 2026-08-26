@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "intent": "full",
+  "customer": {
+    "name": "Northwind Bank",
+    "githubOrg": "northwind-co",
+    "githubRepo": "northwind-portal",
+    "aemEnvId": null,
+    "authBypassActive": null
+  },
+  "phases": {
+    "rebrand": {
+      "status": "in_progress",
+      "lastUpdated": "2026-08-13T11:30:00Z",
+      "steps": {
+        "brand-inputs-collected": "done",
+        "permissions-checked": "done",
+        "design-tokens-applied": "pending",
+        "asset-colors-swept": "pending",
+        "content-register-rewritten": "pending",
+        "published": "pending",
+        "landed-via-pr": "pending",
+        "asset-color-sweep-verified": "pending"
+      }
+    },
+    "backend-onboarding": {
+      "status": "in_progress",
+      "lastUpdated": null,
+      "scopeChoice": null,
+      "steps": {
+        "node-version-check": "pending",
+        "fork-identity-resolved": "pending",
+        "code-sync-verified": "pending",
+        "helix-url-and-readme-corrected": "pending",
+        "tier-selected": "pending",
+        "content-hub-creds-collected": "pending",
+        "auth-mode-applied": "pending",
+        "boot-verified": "pending",
+        "deploy-bypass-gated": "pending",
+        "intake-file-generated": "pending",
+        "repo-identity-rename-applied": "pending",
+        "remote-secrets-pushed": "pending",
+        "remote-d1-migrated": "pending",
+        "ci-token-set": "pending",
+        "deployed-via-merge": "pending"
+      }
+    }
+  }
+}

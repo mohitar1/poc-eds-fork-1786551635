@@ -234,7 +234,7 @@ function createSlide(row, slideIndex, carouselId) {
     // Add click handler
     const handleCardClick = (e) => {
       e.preventDefault();
-      window.open(cardLinkUrl, '_blank');
+      window.open(cardLinkUrl, '_self');
     };
 
     // Add keyboard handler for accessibility

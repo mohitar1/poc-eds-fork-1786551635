@@ -5,16 +5,15 @@ Assets Hub Spark is a demo asset-sharing portal built on AEM Edge Delivery Servi
 ## Environments
 
 ### Main site (cloudflare worker):
-- Live: https://spark.aem.media
-- Preview: https://preview.spark.aem.media
-- Branch (preview): <https://{branch}-spark-eds.workers.dev>
-- Branch (live): <https://{branch}-live-spark-eds.workers.dev>
+- Live: https://frescopamedia.com
+- Preview: https://preview.frescopamedia.com
+- Branch: <https://{branch}.dev.frescopamedia.com>
 
 Note: For branch URLs to work, the branch names must be short and only include lowercase letters, numbers, and dashes characters. Due to [cloudflare worker alias limitations](https://developers.cloudflare.com/workers/configuration/previews/#rules-and-limitations).
 
 ### Helix origins
-- Live: https://main--assethub-spark--aem-showcase.aem.live
-- Preview: https://main--assethub-spark--aem-showcase.aem.page
+- Live: https://main--poc-eds-fork-1786551635--mohitar1.aem.live
+- Preview: https://main--poc-eds-fork-1786551635--mohitar1.aem.page
 
 ## Project structure
 
@@ -104,7 +103,7 @@ Environment variables supported by `npm run dev`:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `AEM_PAGES_URL` | EDS content URL | https://main--assethub-spark--aem-showcase.aem.page |
+| `AEM_PAGES_URL` | EDS content URL | https://main--poc-eds-fork-1786551635--mohitar1.aem.page |
 | `AEM_ENV_ID` | AEM Program + Environment ID | p203220-e2129061 |
 | `DEV_BROWSER` | Browser to open. Mac OS only.<br><br>Options:<ul><li>`Google Chrome`</li><li>`Safari`</li><li>`Firefox`</li></ul> | - (system default) |
 | `AEM_LOG_LEVEL` | Set [`aem` log level](https://www.aem.live/developer/cli-reference#general-options). | `info` |

@@ -35,7 +35,7 @@
 │  └──────┬───────┘  └────────┬──────────┘  └───────────┬─────────────┘    │
 └─────────┼────────────────────┼──────────────────────────┼────────────────┘
           │                    │                          │
-          │ All requests to spark.aem.media              │
+          │ All requests to frescopamedia.com             │
           ▼                    ▼                          ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                    CLOUDFLARE WORKER (Edge Gateway)                       │
@@ -66,11 +66,11 @@
 ### Request Lifecycle (Complete Flow)
 
 ```
-1. Browser → spark.aem.media (DNS → Cloudflare)
+1. Browser → frescopamedia.com (DNS → Cloudflare)
 2. Cloudflare Worker intercepts:
    a. TLS version check (reject TLS 1.0/1.1)
    b. CORS preflight handling
-   c. Preview origin detection (preview.spark.aem.media → .aem.page)
+   c. Preview origin detection (preview.frescopamedia.com → .aem.page)
    d. Cookie parsing and decoding
    e. Auth router (login/logout/callback — unauthenticated)
    f. Public route matching (scripts, styles, blocks, icons)
@@ -240,7 +240,7 @@ scripts/
 
 ### Architecture Overview
 
-The worker is an **itty-router v5** application that acts as the single entry point for all requests to `spark.aem.media`. It terminates authentication, enforces authorization, proxies to multiple backends, and records analytics.
+The worker is an **itty-router v5** application that acts as the single entry point for all requests to `frescopamedia.com`. It terminates authentication, enforces authorization, proxies to multiple backends, and records analytics.
 
 ### File Structure
 
@@ -353,7 +353,7 @@ cloudflare/src/
 | Secret | `COOKIE_SECRET` (Cloudflare Secrets) |
 | Expiry | 6 hours |
 | Payload | user email, name, userId, country, roles, permissions, brands, customers |
-| Scope | `*.spark.aem.media`, `Secure`, `HttpOnly`, `SameSite=None` |
+| Scope | `*.frescopamedia.com`, `Secure`, `HttpOnly`, `SameSite=None` |
 
 ### Supporting Cookies
 
@@ -713,17 +713,17 @@ Jobs:
 
 ### Worker Deployment
 
-- Uses `deploy.sh` script that checks if cloudflare/ files changed
+- CI (`release.yaml`/`build.yaml`) runs `wrangler deploy` directly; `deploy.sh` is for manual/local deploys only
 - Creates GitHub Deployment with environment URL
-- Routes: `spark.aem.media/*`, `*.spark.aem.media/*`
-- Branch previews via `workers_dev = true`
+- Routes: `frescopamedia.com/*` (production), `preview.frescopamedia.com/*` (Workers Custom Domain), `*.dev.frescopamedia.com/*` (branch previews)
+- `workers_dev = false` — no `*.workers.dev` URLs in production
 
 ### Environments
 
 | Environment | URL | Purpose |
 |------------|-----|---------|
-| Production | `spark.aem.media` | Live users |
-| Preview | `preview.spark.aem.media` | Content preview (requires `preview` permission) |
+| Production | `frescopamedia.com` | Live users |
+| Preview | `preview.frescopamedia.com` | Content preview (requires `preview` permission) |
 | Helix Live | `main--assethub-spark--aem-showcase.aem.live` | Direct Helix access |
 | Helix Preview | `main--assethub-spark--aem-showcase.aem.page` | Content staging |
 | Local | `http://localhost:8787` | Developer machines |

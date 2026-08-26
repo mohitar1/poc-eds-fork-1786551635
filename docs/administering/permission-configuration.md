@@ -39,7 +39,7 @@ The `email` column supports three formats. All matching rows are combined — a 
 
 | Permission | Description                                                                             |
 |------------|-----------------------------------------------------------------------------------------|
-| `preview` | Access to preview environments (e.g. `preview.spark.aem.media`) and branch deployments. |
+| `preview` | Access to preview environments (e.g. `preview.frescopamedia.com`) and branch deployments. |
 | `sudo` | Can use the impersonation / user simulation feature.                                    |
 | `admin-reports` | Access to system reports.                                                               |
 | `admin-rights` | Can manage rights request reviews and assign reviewers (self or others).                |

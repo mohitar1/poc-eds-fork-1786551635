@@ -1,0 +1,134 @@
+.renditions-header {
+  padding: 24px 16px 8px;
+}
+
+.renditions-back-link {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: var(--font-size-02, 0.9rem);
+}
+
+.renditions-back-link:hover {
+  text-decoration: underline;
+}
+
+.renditions-title {
+  margin: 0;
+}
+
+.renditions-loading,
+.renditions-error,
+.renditions-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.renditions-loading .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: renditions-spin 1s linear infinite;
+}
+
+@keyframes renditions-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.renditions-error p {
+  color: var(--negative-color, #c00);
+}
+
+.renditions-toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+}
+
+.renditions-toolbar button {
+  padding: 8px 16px;
+  border: 1px solid var(--color-neutral-400);
+  border-radius: 4px;
+  background: var(--background-color);
+  cursor: pointer;
+}
+
+.renditions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 0 16px 24px;
+}
+
+.rendition-card {
+  position: relative;
+  border: 1px solid var(--color-neutral-400);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--background-color);
+}
+
+.rendition-card-select {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+}
+
+.rendition-card-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.rendition-card-body {
+  padding: 12px;
+}
+
+.rendition-card-title {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.rendition-card-download {
+  display: inline-block;
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+.renditions-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.renditions-modal-container {
+  background: var(--background-color);
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 420px;
+  width: 90%;
+}
+
+.renditions-modal-title {
+  margin: 0 0 16px;
+}
+
+.renditions-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}

@@ -3,6 +3,16 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
 export default function decorate(block) {
   /* change to ul, li */
   const ul = document.createElement('ul');
+  // Distinguishes compact icon/logo tiles (portrait/near-square source
+  // art, e.g. "Top Brands") from photo tiles (landscape source photos,
+  // e.g. "Browse by channel" on brand pages) so shared section styles
+  // can size each correctly — icons need to stay contained/small, photos
+  // need to stay full-bleed/cover. Checked from the first image's real
+  // intrinsic width/height attributes, before any block-specific CSS
+  // (which differs only by content, not by markup) can be applied.
+  const firstImg = block.querySelector('img[width][height]');
+  const isIconArt = firstImg && (Number(firstImg.height) > Number(firstImg.width));
+  if (isIconArt) block.classList.add('icon-tiles');
   [...block.children].forEach((row) => {
     const li = document.createElement('li');
     while (row.firstElementChild) li.append(row.firstElementChild);

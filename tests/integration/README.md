@@ -9,7 +9,7 @@ per-feature test files needed.
 1. **Get your session cookie**
    - Open the site in your browser
    - DevTools → Application → Cookies
-   - Copy the value of the `session` cookie for `spark-eds.workers.dev`
+   - Copy the value of the `session` cookie for `frescopamedia.com`
 
 2. **Export it**
    ```bash
@@ -129,10 +129,10 @@ Use `expectByEnv` to set per-environment expectations:
 
 | `TEST_ENV` value | Target URL                                         |
 |------------------|----------------------------------------------------|
-| `production` (default) | `https://spark-eds.workers.dev`      |
-| `preview`        | `https://preview-spark-eds.workers.dev`    |
+| `production` (default) | `https://frescopamedia.com`      |
+| `preview`        | `https://preview.frescopamedia.com`    |
 | `local`          | `http://localhost:8787`                             |
-| `branch:<name>`  | `https://<name>-spark-eds.workers.dev`     |
+| `branch:<name>`  | `https://<name>.dev.frescopamedia.com`     |
 
 ## Troubleshooting
 

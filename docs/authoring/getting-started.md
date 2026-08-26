@@ -89,8 +89,8 @@ Your document's location and name determine its URL:
 
 | Document Location | URL                        |
 |-------------------|----------------------------|
-| `/en/about` | `spark.aem.media/en/about` |
-| `/en/help/faq` | `spark.aem.media/en/help/faq` |
+| `/en/about` | `frescopamedia.com/en/about` |
+| `/en/help/faq` | `frescopamedia.com/en/help/faq` |
 
 ### Sections
 

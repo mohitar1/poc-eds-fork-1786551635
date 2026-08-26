@@ -1,3 +1,5 @@
+import config from '../config.js';
+
 const getExtension = (path) => {
   const basename = path.split('/').pop();
   const pos = basename.lastIndexOf('.');
@@ -56,6 +58,13 @@ export async function originHelix(request, env) {
   searchParams.sort();
 
   const helixOrigin = request.helixOrigin || env.HELIX_ORIGIN;
+  if (!helixOrigin) {
+    // A var-less production deploy (wrangler deploy without --var and without
+    // keep_vars) can wipe HELIX_ORIGIN, leaving it undefined. Fail with a clear
+    // message instead of a TypeError that surfaces as Cloudflare Error 1101.
+    console.error('HELIX_ORIGIN is not set (request.helixOrigin and env.HELIX_ORIGIN are both undefined)');
+    return new Response('HELIX_ORIGIN is not configured', { status: 500 });
+  }
   if (
     !helixOrigin.match(/^http:\/\/localhost:\d+$/) &&
     !helixOrigin.match(/^https:\/\/.*--.*--.*\.(?:aem|hlx)\.(live|page)$/)
@@ -82,7 +91,7 @@ export async function originHelix(request, env) {
   if (env.HELIX_ORIGIN_AUTHENTICATION && !isLocalHelix) {
     req.headers.set('authorization', `token ${await env.HELIX_ORIGIN_AUTHENTICATION.get()}`);
   }
-  const pushInvalidation = env.HELIX_PUSH_INVALIDATION !== 'disabled';
+  const pushInvalidation = config.HELIX_PUSH_INVALIDATION !== 'disabled';
   if (pushInvalidation) {
     req.headers.set('x-push-invalidation', 'enabled');
   }

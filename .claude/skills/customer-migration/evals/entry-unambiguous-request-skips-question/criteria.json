@@ -1,0 +1,43 @@
+{
+  "context": "Tests the entry flow's ambiguity-detection branch (SKILL.md step 2: 'unless the request already makes it unambiguous — e.g. just get it running is backend-only') plus invariant I4 (skipping optional work is a valid end state). A first message that already unambiguously asks for backend-only should skip the picker entirely, set intent to backend-only, and mark the rebrand phase not-requested rather than in_progress or absent.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "No picker/entry-question shown",
+      "max_score": 30,
+      "description": "The agent does NOT render or ask the 'new look vs. already done' entry question or any multiple-choice picker about rebrand/design scope. The request is treated as already unambiguous."
+    },
+    {
+      "name": "intent set to backend-only",
+      "max_score": 25,
+      "description": "The resulting .internal/onboarding-state.json has intent equal to 'backend-only' (not null, not 'full').",
+      "check": {
+        "type": "jsonPath",
+        "file": ".internal/onboarding-state.json",
+        "path": "intent",
+        "equals": "backend-only"
+      }
+    },
+    {
+      "name": "rebrand phase marked not-requested",
+      "max_score": 25,
+      "description": "phases.rebrand.status in the state file is 'not-requested' — not 'in_progress' and not left at its default/absent value.",
+      "check": {
+        "type": "jsonPath",
+        "file": ".internal/onboarding-state.json",
+        "path": "phases.rebrand.status",
+        "equals": "not-requested"
+      }
+    },
+    {
+      "name": "No rebrand work performed",
+      "max_score": 10,
+      "description": "The agent does not check the design-plugin gate, edit styles.css/assets, or otherwise begin Phase A work."
+    },
+    {
+      "name": "Proceeds toward Phase B",
+      "max_score": 10,
+      "description": "The agent's response moves toward backend onboarding (e.g. starts B.1/B.2, or plainly states it's proceeding to get the site running) rather than stopping or asking an unrelated question."
+    }
+  ]
+}

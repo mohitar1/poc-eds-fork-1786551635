@@ -193,6 +193,137 @@ function normalizeNavLayout(nav) {
   nav.replaceChildren(...layout);
 }
 
+function getUserInitials() {
+  if (!window.user || !window.user.name) {
+    return '';
+  }
+  return window.user.name.split(' ').filter((name) => /^[A-Za-z]/.test(name)).map((name) => name.charAt(0)).join('')
+    .toUpperCase();
+}
+
+// Map portal elements to their original menu containers for cleanup
+const portalOrigins = new WeakMap();
+
+/**
+ * Opens a dropdown menu as a fixed-position overlay on document.body,
+ * escaping the header-bar stacking context so menus render above the nav bar.
+ *
+ * @param {Element} triggerEl   The button that was clicked
+ * @param {Element} menuEl      The .dropdown-menu element containing the <ul>
+ * @param {string}  portalClass Extra class for type-specific styling (e.g. 'my-account-portal')
+ * @returns {{ portal: Element, close: Function }}
+ */
+function openDropdownPortal(triggerEl, menuEl, portalClass = '') {
+  // Close any existing dropdown portals and return their <ul> to original parents
+  document.querySelectorAll('.header-dropdown-portal').forEach((p) => {
+    const portalUl = p.querySelector('ul');
+    const originalParent = portalOrigins.get(p);
+    if (portalUl && originalParent) {
+      originalParent.appendChild(portalUl);
+    }
+    p.remove();
+  });
+
+  const ul = menuEl.querySelector('ul');
+  if (!ul) return { portal: null, close: () => {} };
+
+  // Compute position from trigger button
+  const rect = triggerEl.getBoundingClientRect();
+
+  const portal = document.createElement('div');
+  portal.className = `header-dropdown-portal${portalClass ? ` ${portalClass}` : ''}`;
+  portal.style.top = `${rect.bottom + 5}px`;
+  portal.style.left = `${rect.left + rect.width / 2}px`;
+  portal.style.transform = 'translateX(-50%)';
+  portalOrigins.set(portal, menuEl); // store reference for cleanup
+
+  // Move the <ul> from the in-DOM dropdown to the portal
+  portal.appendChild(ul);
+  document.body.appendChild(portal);
+
+  const close = () => {
+    // Move <ul> back to its original dropdown container
+    if (ul.parentElement === portal) {
+      menuEl.appendChild(ul);
+    }
+    portal.remove();
+  };
+
+  return { portal, close };
+}
+
+function createMyAccount(t) {
+  const myAccountWrapper = document.createElement('div');
+
+  let activeAccountPortal = null;
+
+  if (window.user) {
+    const myAccount = document.createElement('div');
+    myAccount.className = 'my-account';
+    const myAccountButton = document.createElement('div');
+    myAccountButton.className = 'my-account-button';
+    const impersonationIndicator = window.user.su ? '<span class="impersonation-indicator"></span>' : '';
+    myAccountButton.innerHTML = `
+      <div class="avatar">
+        ${getUserInitials()}
+        ${impersonationIndicator}
+      </div>
+      ${t('myAccount', 'My Account')}
+      <span class="down-arrow-icon"></span>
+    `;
+
+    const myAccountMenu = document.createElement('div');
+    myAccountMenu.className = 'my-account-menu dropdown-menu';
+    myAccountMenu.innerHTML = `
+      <ul>
+        <li><a href="#" id="my-profile-link">${t('myProfile', 'My Profile')}</a></li>
+        <li><a href="/auth/logout">${t('logOut', 'Log Out')}</a></li>
+      </ul>
+    `;
+
+    // Bind My Profile link handler once using event delegation (works regardless of portal state)
+    myAccountMenu.querySelector('ul').addEventListener('click', (ev) => {
+      const profileLink = ev.target.closest('#my-profile-link');
+      if (!profileLink) return;
+      ev.preventDefault();
+      showProfileModal();
+      activeAccountPortal?.close();
+      activeAccountPortal = null;
+      myAccountButton.classList.remove('active');
+    });
+
+    myAccountButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = !!activeAccountPortal;
+      if (isOpen) {
+        activeAccountPortal.close();
+        activeAccountPortal = null;
+        myAccountButton.classList.remove('active');
+      } else {
+        activeAccountPortal = openDropdownPortal(myAccountButton, myAccountMenu, 'my-account-portal');
+        myAccountButton.classList.add('active');
+      }
+    });
+    myAccount.appendChild(myAccountButton);
+    myAccount.appendChild(myAccountMenu);
+
+    myAccountWrapper.append(myAccount);
+  }
+
+  document.addEventListener('click', (e) => {
+    const myAccountBtn = myAccountWrapper.querySelector('.my-account-button');
+    if (activeAccountPortal
+      && !myAccountBtn?.contains(e.target)
+      && !activeAccountPortal.portal?.contains(e.target)) {
+      activeAccountPortal.close();
+      activeAccountPortal = null;
+      myAccountBtn?.classList.remove('active');
+    }
+  });
+
+  return myAccountWrapper;
+}
+
 async function createNavBar(t) {
   // load nav as fragment
   const navMeta = getMetadata('nav');
@@ -367,6 +498,9 @@ async function createNavBar(t) {
     // Append wrapper to tools
     tools.appendChild(iconsWrapper);
 
+    // My Account sits in the same row as the icon cluster
+    tools.appendChild(createMyAccount(t));
+
     // Expose function to update message badge (shows red circle indicator)
     window.updateMessageBadge = function (unreadCount) {
       const badge = messageIcon.querySelector('.message-badge');
@@ -445,139 +579,6 @@ async function createNavBar(t) {
   return navWrapper;
 }
 
-function getUserInitials() {
-  if (!window.user || !window.user.name) {
-    return '';
-  }
-  return window.user.name.split(' ').filter((name) => /^[A-Za-z]/.test(name)).map((name) => name.charAt(0)).join('')
-    .toUpperCase();
-}
-
-// Map portal elements to their original menu containers for cleanup
-const portalOrigins = new WeakMap();
-
-/**
- * Opens a dropdown menu as a fixed-position overlay on document.body,
- * escaping the header-bar stacking context so menus render above the nav bar.
- *
- * @param {Element} triggerEl   The button that was clicked
- * @param {Element} menuEl      The .dropdown-menu element containing the <ul>
- * @param {string}  portalClass Extra class for type-specific styling (e.g. 'my-account-portal')
- * @returns {{ portal: Element, close: Function }}
- */
-function openDropdownPortal(triggerEl, menuEl, portalClass = '') {
-  // Close any existing dropdown portals and return their <ul> to original parents
-  document.querySelectorAll('.header-dropdown-portal').forEach((p) => {
-    const portalUl = p.querySelector('ul');
-    const originalParent = portalOrigins.get(p);
-    if (portalUl && originalParent) {
-      originalParent.appendChild(portalUl);
-    }
-    p.remove();
-  });
-
-  const ul = menuEl.querySelector('ul');
-  if (!ul) return { portal: null, close: () => {} };
-
-  // Compute position from trigger button
-  const rect = triggerEl.getBoundingClientRect();
-
-  const portal = document.createElement('div');
-  portal.className = `header-dropdown-portal${portalClass ? ` ${portalClass}` : ''}`;
-  portal.style.top = `${rect.bottom + 5}px`;
-  portal.style.left = `${rect.left + rect.width / 2}px`;
-  portal.style.transform = 'translateX(-50%)';
-  portalOrigins.set(portal, menuEl); // store reference for cleanup
-
-  // Move the <ul> from the in-DOM dropdown to the portal
-  portal.appendChild(ul);
-  document.body.appendChild(portal);
-
-  const close = () => {
-    // Move <ul> back to its original dropdown container
-    if (ul.parentElement === portal) {
-      menuEl.appendChild(ul);
-    }
-    portal.remove();
-  };
-
-  return { portal, close };
-}
-
-async function createHeaderBar(t) {
-  const headerBar = document.createElement('div');
-  headerBar.className = 'header-bar';
-
-  let activeAccountPortal = null;
-
-  if (window.user) {
-    const myAccount = document.createElement('div');
-    myAccount.className = 'my-account';
-    const myAccountButton = document.createElement('div');
-    myAccountButton.className = 'my-account-button';
-    const impersonationIndicator = window.user.su ? '<span class="impersonation-indicator"></span>' : '';
-    myAccountButton.innerHTML = `
-      <div class="avatar">
-        ${getUserInitials()}
-        ${impersonationIndicator}
-      </div>
-      ${t('myAccount', 'My Account')}
-      <span class="down-arrow-icon"></span>
-    `;
-
-    const myAccountMenu = document.createElement('div');
-    myAccountMenu.className = 'my-account-menu dropdown-menu';
-    myAccountMenu.innerHTML = `
-      <ul>
-        <li><a href="#" id="my-profile-link">${t('myProfile', 'My Profile')}</a></li>
-        <li><a href="${localizePath('/search-collections')}">${t('myCollections', 'My Collections')}</a></li>
-        <li><a href="/auth/logout">${t('logOut', 'Log Out')}</a></li>
-      </ul>
-    `;
-
-    // Bind My Profile link handler once using event delegation (works regardless of portal state)
-    myAccountMenu.querySelector('ul').addEventListener('click', (ev) => {
-      const profileLink = ev.target.closest('#my-profile-link');
-      if (!profileLink) return;
-      ev.preventDefault();
-      showProfileModal();
-      activeAccountPortal?.close();
-      activeAccountPortal = null;
-      myAccountButton.classList.remove('active');
-    });
-
-    myAccountButton.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = !!activeAccountPortal;
-      if (isOpen) {
-        activeAccountPortal.close();
-        activeAccountPortal = null;
-        myAccountButton.classList.remove('active');
-      } else {
-        activeAccountPortal = openDropdownPortal(myAccountButton, myAccountMenu, 'my-account-portal');
-        myAccountButton.classList.add('active');
-      }
-    });
-    myAccount.appendChild(myAccountButton);
-    myAccount.appendChild(myAccountMenu);
-
-    headerBar.append(myAccount);
-  }
-
-  document.addEventListener('click', (e) => {
-    const myAccountBtn = headerBar.querySelector('.my-account-button');
-    if (activeAccountPortal
-      && !myAccountBtn?.contains(e.target)
-      && !activeAccountPortal.portal?.contains(e.target)) {
-      activeAccountPortal.close();
-      activeAccountPortal = null;
-      myAccountBtn?.classList.remove('active');
-    }
-  });
-
-  return headerBar;
-}
-
 /**
  * loads and decorates the header, mainly the nav
  * @param {Element} block The header block element
@@ -587,7 +588,7 @@ export default async function decorate(block) {
 
   if (getMetadata('header') === 'no') {
     // Minimal welcome-page header: just the brand logo, no nav or toolbar
-    block.parentElement.style.height = 'var(--header-bar-height, 48px)';
+    block.parentElement.style.height = 'var(--nav-height, 64px)';
     const welcomeBar = document.createElement('div');
     welcomeBar.className = 'header-welcome-bar';
     welcomeBar.innerHTML = `
@@ -603,6 +604,5 @@ export default async function decorate(block) {
   // Load localized labels
   const t = await getAppLabel();
 
-  block.append(await createHeaderBar(t));
   block.append(await createNavBar(t));
 }

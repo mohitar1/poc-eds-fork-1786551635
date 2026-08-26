@@ -6,8 +6,8 @@
  */
 
 const ENV_URLS = {
-  production: 'https://spark.aem.media',
-  preview: 'https://preview-spark-eds.sparkedsmedia.workers.dev',
+  production: 'https://frescopamedia.com',
+  preview: 'https://preview.frescopamedia.com',
   local: 'http://localhost:8787',
 };
 
@@ -17,10 +17,10 @@ const ENV_URLS = {
 export function getBaseUrl() {
   const env = process.env.TEST_ENV || 'production';
 
-  // branch:my-feature → https://my-feature-spark-eds.sparkedsmedia.workers.dev
+  // branch:my-feature → https://my-feature.dev.frescopamedia.com
   if (env.startsWith('branch:')) {
     const branch = env.split(':')[1];
-    return `https://${branch}-spark-eds.sparkedsmedia.workers.dev`;
+    return `https://${branch}.dev.frescopamedia.com`;
   }
 
   return ENV_URLS[env] || ENV_URLS.production;

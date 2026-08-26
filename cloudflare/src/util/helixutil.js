@@ -1,3 +1,5 @@
+import config from '../config.js';
+
 /**
  * Process array fields in an object by splitting comma-separated strings
  * @param {Object} obj - The object to process
@@ -77,7 +79,7 @@ export async function fetchHelixSheet(request, env, path, options) {
     headers.authorization = `token ${await env.HELIX_ORIGIN_AUTHENTICATION.get()}`;
   }
 
-  const pushInvalidation = env.HELIX_PUSH_INVALIDATION !== 'disabled';
+  const pushInvalidation = config.HELIX_PUSH_INVALIDATION !== 'disabled';
   if (pushInvalidation) {
     headers['x-push-invalidation'] = 'enabled';
   }

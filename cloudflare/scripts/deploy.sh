@@ -27,37 +27,20 @@ ORG=aem-showcase
 WORKER=spark-eds
 WORKER_DOMAIN=${WORKER_DOMAIN:-sparkedsmedia}
 
-# Usage: upload_version <tag> <message>
+# Usage: upload_version <tag> <message> <env>
+# <env> selects the wrangler.jsonc environment (production | branch).
 # Returns version id in version.id file
 function upload_version() {
-  echo "Deploying alias '$1'"
+  echo "Deploying alias '$1' (env: $3)"
   echo "HELIX_ORIGIN: $HELIX_ORIGIN"
 
   npx wrangler versions upload \
+    --env "$3" \
     --preview-alias "$1" \
     --tag "$1" \
     --message "$2" \
     --var "HELIX_ORIGIN:$HELIX_ORIGIN" \
     | tee >(grep "Worker Version ID:" | cut -d " " -f 4 > version.id)
-}
-
-# Usage: prepare_config_for_branch_deploy
-# Temporarily removes D1 binding for branch deployments (not supported in preview)
-function prepare_config_for_branch_deploy() {
-  echo "Removing D1 binding for branch preview deployment..."
-  cp wrangler.toml wrangler.toml.backup
-  # Remove D1 databases section from wrangler.toml
-  sed -i.tmp '/^\[\[d1_databases\]\]/,/^$/d' wrangler.toml
-  rm -f wrangler.toml.tmp
-}
-
-# Usage: restore_config
-# Restores original wrangler.toml after deployment
-function restore_config() {
-  if [ -f wrangler.toml.backup ]; then
-    mv wrangler.toml.backup wrangler.toml
-    echo "Restored original wrangler.toml"
-  fi
 }
 
 set -e
@@ -138,35 +121,27 @@ if [ "$ci" = "true" ] && [ "$branch" = "main" ]; then
   url="https://$WORKER.$WORKER_DOMAIN.workers.dev"
 
   HELIX_ORIGIN="https://$branch--$REPO--$ORG.aem.live"
-  upload_version "$tag" "$message"
+  upload_version "$tag" "$message" production
   version=$(cat version.id)
 
   # deploy main version as production
-  npx wrangler versions deploy -y "$version"
+  npx wrangler versions deploy --env production -y "$version"
 
   # deploy triggers (cron schedules, routes, custom domains)
-  npx wrangler triggers deploy
+  npx wrangler triggers deploy --env production
 
 else
   # branch/local deployment
   url="https://$tag-$WORKER.$WORKER_DOMAIN.workers.dev"
 
-  # Remove D1 binding for branch/preview deployments (D1 not supported in preview environments)
-  prepare_config_for_branch_deploy
-  trap restore_config EXIT  # Ensure config is restored even on error
-
   # create branch version (using preview content)
   HELIX_ORIGIN="https://$branch--$REPO--$ORG.aem.page"
-  upload_version "$tag" "$message"
+  upload_version "$tag" "$message" branch
   version=$(cat version.id)
 
   # create branch live version (using live content)
   HELIX_ORIGIN="https://$branch--$REPO--$ORG.aem.live"
-  upload_version "$tag-live" "$message"
-
-  # Restore original config
-  restore_config
-  trap - EXIT  # Clear the trap
+  upload_version "$tag-live" "$message" branch
 fi
 
 rm version.id || true

@@ -2369,7 +2369,9 @@ function getTruncatedSidebarFacetKeys(sortedEntries, checkedValues, maxItems) {
 
 function renderFacetValues(key, facetValues, checkedValues, excFacets, maxItems = 0) {
   const searchTerm = searchTerms[key] || '';
-  const entries = Object.entries(facetValues);
+  // Asset metadata can contain empty-string values (e.g. a stray '' entry in an
+  // allowedCountries array) — never render those as a blank, unlabeled checkbox.
+  const entries = Object.entries(facetValues).filter(([value]) => value !== '');
 
   // Sort: selected items first, then by count (highest first) or sortDirection
   const sortDirection = excFacets[key]?.sortDirection?.toLowerCase();

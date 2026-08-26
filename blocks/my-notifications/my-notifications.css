@@ -1,5 +1,6 @@
 /* My Notifications - Main Container */
 .my-notifications {
+  font-family: var(--body-font-family, sans-serif);
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
@@ -20,9 +21,10 @@
 }
 
 .my-notifications-title {
+  font-family: var(--body-font-family);
   font-size: 2.5rem;
   font-weight: 400;
-  color: #333;
+  color: var(--color-neutral-800);
   margin: 0;
   padding-bottom: 0.5rem;
 }
@@ -45,7 +47,7 @@
 }
 
 .count-total {
-  color: #666;
+  color: var(--color-neutral-700);
 }
 
 .count-unread {
@@ -53,8 +55,8 @@
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
 }
 
 /* Filter Controls */
@@ -72,16 +74,16 @@
 }
 
 .filter-label {
-  font-size: 0.9rem;
+  font-size: var(--body-font-size-xs);
   font-weight: 500;
-  color: #666;
+  color: var(--color-neutral-700);
 }
 
 .filter-select {
   padding: 0.5rem 2.5rem 0.5rem 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-neutral-300);
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: var(--body-font-size-xs);
   background-color: white;
   cursor: pointer;
   outline: none;
@@ -100,37 +102,35 @@
 /* Notifications List Container */
 .notifications-list-container {
   background-color: white;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-neutral-300);
   border-radius: 4px;
   overflow: hidden;
 }
 
+/* Shared grid template for the table header and every row so header labels
+   line up above their cells. Columns: status, priority, date, subject, type, from, actions. */
+.notifications-table-header,
+.notification-row {
+  display: grid;
+  grid-template-columns: 30px 20px 150px 2fr 190px 200px 100px;
+  gap: 1rem;
+}
+
 /* Table Header */
 .notifications-table-header {
-  display: grid;
-  grid-template-columns: 24px 20px 150px 2fr 180px 200px 100px;
-  gap: 1rem;
-  padding: 1rem;
-  background-color: #f5f5f5;
-  border-bottom: 2px solid #ddd;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #666;
+  padding: 0.85rem 0.75rem;
+  background-color: var(--color-neutral-200);
+  border-bottom: 2px solid var(--color-neutral-400);
+  font-weight: 700;
+  font-size: var(--body-font-size-xs);
+  color: var(--color-neutral-700);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
 }
 
 .notifications-table-header .header-cell {
   display: flex;
   align-items: center;
-}
-
-.notifications-table-header .header-status {
-  width: 40px;
-}
-
-.notifications-table-header .header-priority {
-  width: 30px;
 }
 
 /* Messages List */
@@ -144,7 +144,7 @@
 .notifications-empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  color: #999;
+  color: var(--color-neutral-600);
 }
 
 .empty-state-icon {
@@ -153,13 +153,14 @@
 }
 
 .empty-state-icon svg {
-  color: #999;
+  color: var(--color-neutral-600);
 }
 
 .notifications-empty-state h3 {
+  font-family: var(--body-font-family);
   font-size: 1.5rem;
   font-weight: 500;
-  color: #666;
+  color: var(--color-neutral-700);
   margin: 0 0 0.5rem;
 }
 
@@ -169,16 +170,13 @@
 
 .notifications-empty-state p {
   font-size: 1rem;
-  color: #999;
+  color: var(--color-neutral-600);
 }
 
 /* Message Row */
 .notification-row {
-  display: grid;
-  grid-template-columns: 30px 10px 150px 2fr 190px 230px 100px;
-  gap: 1rem;
   background-color: white;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-neutral-300);
   transition: background-color 0.2s ease;
 }
 
@@ -187,11 +185,12 @@
 }
 
 .notification-row:hover {
-  background-color: #fafafa;
+  background-color: rgb(0 100 125 / 8%);
 }
 
 .notification-row-unread {
-  background-color: #f5f9ff;
+  /* faint brand-primary wash so unread reads as subtly highlighted, not a heavy block */
+  background-color: rgb(0 100 125 / 4%);
 }
 
 .notification-row-unread .notification-subject {
@@ -205,7 +204,7 @@
 }
 
 .notification-row.notification-expanded {
-  background-color: #fafafa;
+  background-color: var(--color-neutral-100);
 }
 
 /* Notification Header - Grid Cells */
@@ -215,22 +214,23 @@
 
 /* Status Indicator */
 .notification-status-indicator {
-  padding: 1rem 0;
+  padding: 0.85rem 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .unread-dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   background-color: var(--button-primary);
   border-radius: 50%;
+  box-shadow: 0 0 0 3px rgb(0 100 125 / 15%);
 }
 
 /* Priority Indicator */
 .notification-priority-indicator {
-  padding: 1rem 0;
+  padding: 0.85rem 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -245,20 +245,20 @@
 
 /* Date */
 .notification-date {
-  padding: 1rem 0;
-  font-size: 0.9rem;
+  padding: 0.85rem 0.75rem;
+  font-size: var(--body-font-size-xs);
   font-weight: 400;
-  color: #666;
+  color: var(--color-neutral-700);
   display: flex;
   align-items: center;
 }
 
 /* Subject */
 .notification-subject {
-  padding: 1rem 0;
-  font-size: 14px;
+  padding: 0.85rem 0.75rem;
+  font-size: var(--body-font-size-s);
   font-weight: 600;
-  color: #333;
+  color: var(--color-neutral-800);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -268,19 +268,19 @@
 
 /* Type */
 .notification-type {
-  padding: 1rem 0;
+  padding: 0.85rem 0;
   display: flex;
   align-items: center;
 }
 
 .notification-type-badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem 0.7rem;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: var(--body-font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
 }
 
 .notification-type-announcement {
@@ -300,17 +300,17 @@
 
 /* From */
 .notification-from {
-  padding: 1rem 0;
-  font-size: 0.875rem;
+  padding: 0.85rem 0.75rem;
+  font-size: var(--body-font-size-xs);
   font-weight: 400;
-  color: #666;
+  color: var(--color-neutral-700);
   display: flex;
   align-items: center;
 }
 
 /* Actions */
 .notification-actions {
-  padding: 1rem 0;
+  padding: 0.85rem 0;
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -375,17 +375,17 @@
 }
 
 .notification-content {
-  font-size: 0.95rem;
+  font-size: var(--body-font-size-s);
   line-height: 1.6;
-  color: #333;
+  color: var(--color-neutral-800);
   padding: 1rem;
-  background-color: #f9f9f9;
+  background-color: var(--color-neutral-100);
   border-radius: 4px;
-  border-left: 3px solid #e0e0e0;
+  border-left: 3px solid var(--color-neutral-300);
 }
 
 .notification-content a {
-  color: #06c;
+  color: var(--link-color);
   text-decoration: underline;
   word-break: break-all;
 }
@@ -434,13 +434,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 2rem 2rem 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-neutral-300);
 }
 
 .modal-title {
+  font-family: var(--body-font-family);
   font-size: 1.5rem;
   font-weight: 500;
-  color: #333;
+  color: var(--color-neutral-800);
   margin: 0;
 }
 
@@ -448,7 +449,7 @@
   background: none;
   border: none;
   font-size: 2rem;
-  color: #999;
+  color: var(--color-neutral-600);
   cursor: pointer;
   padding: 0;
   width: 30px;
@@ -459,7 +460,7 @@
 }
 
 .modal-close:hover {
-  color: #333;
+  color: var(--color-neutral-800);
 }
 
 .modal-body {
@@ -469,14 +470,14 @@
 
 .modal-notification {
   font-size: 1rem;
-  color: #333;
+  color: var(--color-neutral-800);
   margin-bottom: 0.5rem;
   line-height: 1.6;
 }
 
 .modal-subnotification {
   font-size: 0.875rem;
-  color: #999;
+  color: var(--color-neutral-600);
   margin-top: 0.5rem;
 }
 
@@ -488,8 +489,8 @@
 }
 
 .btn-cancel {
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: var(--color-neutral-200);
+  color: var(--color-neutral-700);
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 25px;
@@ -500,7 +501,7 @@
 }
 
 .btn-cancel:hover {
-  background-color: #e0e0e0;
+  background-color: var(--color-neutral-300);
 }
 
 .btn-delete {
@@ -516,7 +517,7 @@
 }
 
 .btn-delete:hover {
-  background-color: #cc0010;
+  background-color: var(--button-primary-hover);
 }
 
 /* Error State */
@@ -526,14 +527,15 @@
 }
 
 .notifications-error h2 {
+  font-family: var(--body-font-family);
   font-size: 2rem;
-  color: #666;
+  color: var(--color-neutral-700);
   margin-bottom: 1rem;
 }
 
 .notifications-error p {
   font-size: 1rem;
-  color: #999;
+  color: var(--color-neutral-600);
   margin-bottom: 2rem;
 }
 
@@ -550,7 +552,7 @@
 }
 
 .btn-retry:hover {
-  background-color: #cc0010;
+  background-color: var(--button-primary-hover);
 }
 
 /* Horizontal scroll support up to 1124px width without hiding columns */

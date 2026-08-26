@@ -1,5 +1,6 @@
 import { Router } from 'itty-router';
 import { createRemoteJWKSet, jwtVerify, SignJWT } from 'jose';
+import config from './config.js';
 import { createSession, getUser } from './user.js';
 import { createSignedCookie, deleteCookie, isValidUrl, setCookie, validateSignedCookie } from './util/http.js';
 import { maskEmail } from './util/log-utils.js';
@@ -18,8 +19,9 @@ const COOKIE_STATE = 'State';
 const COOKIE_LOGIN_VISITED = 'LoginVisited';
 const ORIGINAL_URL_PARAM = 'url';
 
-/* Required Cloudflare configuration = env variables */
-const REQUIRED_ENV_VARS = ['MICROSOFT_ENTRA_TENANT_ID', 'MICROSOFT_ENTRA_CLIENT_ID', 'COOKIE_SECRET'];
+/* Required Cloudflare configuration = env variables.
+   Entra tenant/client ids are now compile-time constants in config.js, not env vars. */
+const REQUIRED_ENV_VARS = ['COOKIE_SECRET'];
 
 async function createSessionJWT(request, env, session) {
   const payload = {
@@ -35,8 +37,8 @@ async function createSessionJWT(request, env, session) {
     // use current domain as issuer
     .setIssuer(request.uri.origin)
     // use same audience as MS entra IDP app
-    .setAudience(env.MICROSOFT_ENTRA_CLIENT_ID)
-    .setExpirationTime(env.SESSION_COOKIE_EXPIRATION || '6h')
+    .setAudience(config.MICROSOFT_ENTRA_CLIENT_ID)
+    .setExpirationTime(config.SESSION_COOKIE_EXPIRATION)
     .setNotBefore('0m')
     .sign(key);
 
@@ -49,7 +51,7 @@ async function validateSessionJWT(request, env, sessionJWT) {
 
     const { payload } = await jwtVerify(sessionJWT, key, {
       issuer: request.uri.origin,
-      audience: env.MICROSOFT_ENTRA_CLIENT_ID,
+      audience: config.MICROSOFT_ENTRA_CLIENT_ID,
       clockTolerance: 5,
     });
     return payload;
@@ -79,15 +81,14 @@ async function validateMicrosoftSignInCallback(request, state) {
   return formData;
 }
 
-async function validateIdToken(request, rawIdToken, env, nonce) {
-  const jwksUrl = env.MICROSOFT_ENTRA_JWKS_URL || 'https://login.microsoftonline.com/common/discovery/keys';
-  const JWKS = createRemoteJWKSet(new URL(jwksUrl));
+async function validateIdToken(request, rawIdToken, nonce) {
+  const JWKS = createRemoteJWKSet(new URL(config.MICROSOFT_ENTRA_JWKS_URL));
 
   try {
     // validate id_token signature and expiry
     const { payload } = await jwtVerify(rawIdToken, JWKS, {
-      audience: env.MICROSOFT_ENTRA_CLIENT_ID,
-      issuer: `https://login.microsoftonline.com/${env.MICROSOFT_ENTRA_TENANT_ID}/v2.0`,
+      audience: config.MICROSOFT_ENTRA_CLIENT_ID,
+      issuer: `https://login.microsoftonline.com/${config.MICROSOFT_ENTRA_TENANT_ID}/v2.0`,
     });
 
     console.log('User login:', payload);
@@ -98,7 +99,7 @@ async function validateIdToken(request, rawIdToken, env, nonce) {
       return null;
     }
     // validate tenant
-    if (payload.tid !== env.MICROSOFT_ENTRA_TENANT_ID) {
+    if (payload.tid !== config.MICROSOFT_ENTRA_TENANT_ID) {
       request.error = `OIDC error: Invalid tenant (tid) in id_token: ${payload.tid}`;
       return null;
     }
@@ -256,9 +257,9 @@ authRouter
 
     // redirect to MS login page
     const authorizeUrl =
-      `https://login.microsoftonline.com/${env.MICROSOFT_ENTRA_TENANT_ID}/oauth2/v2.0/authorize?` +
+      `https://login.microsoftonline.com/${config.MICROSOFT_ENTRA_TENANT_ID}/oauth2/v2.0/authorize?` +
       new URLSearchParams({
-        client_id: env.MICROSOFT_ENTRA_CLIENT_ID,
+        client_id: config.MICROSOFT_ENTRA_CLIENT_ID,
         response_type: 'id_token',
         redirect_uri: redirectUrl.href,
         response_mode: 'form_post',
@@ -302,7 +303,7 @@ authRouter
       return unauthorized(request);
     }
 
-    request.idToken = await validateIdToken(request, formData.get('id_token'), env, state.nonce);
+    request.idToken = await validateIdToken(request, formData.get('id_token'), state.nonce);
     if (!request.idToken) {
       return unauthorized(request);
     }
@@ -365,12 +366,12 @@ authRouter
   })
 
   // trigger logout
-  .get(`${AUTH_PREFIX}/logout`, withAuthentication, (request, env) => {
+  .get(`${AUTH_PREFIX}/logout`, withAuthentication, (request, _env) => {
     console.log('User logout:', request.user.email);
 
     // redirect to MS logout page
     const logoutUrl =
-      `https://login.microsoftonline.com/${env.MICROSOFT_ENTRA_TENANT_ID}/oauth2/logout?` +
+      `https://login.microsoftonline.com/${config.MICROSOFT_ENTRA_TENANT_ID}/oauth2/logout?` +
       new URLSearchParams({
         post_logout_redirect_uri: `${request.uri.origin}/en/`,
       });

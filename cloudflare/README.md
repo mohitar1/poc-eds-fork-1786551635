@@ -4,10 +4,9 @@ A Cloudflare Worker that acts as outermost CDN for the Spark project with some a
 
 - [Worker in Cloudflare Dashboard](https://dash.cloudflare.com/d3259185ae56522248254092489d6755/workers/services/view/spark/production/metrics)
 
-- Live: https://spark.aem.media
-- Preview: https://preview.spark.aem.media
-- Branch (preview): <https://{branch}-spark-eds.workers.dev>
-- Branch (live): <https://{branch}-live-spark-eds.workers.dev>
+- Live: https://frescopamedia.com
+- Preview: https://preview.frescopamedia.com
+- Branch: <https://{branch}.dev.frescopamedia.com>
 
 ## URL Paths
 
@@ -89,23 +88,20 @@ npm run lint:fix
 
 ### CI branch
 
-On each branch/PR push, the Github Actions CI will automatically deploy brancher worker URLs:
+On each branch/PR push, the Github Actions CI will automatically deploy a dedicated branch worker with its own custom-domain route:
 
 | URL | Helix origin |
 |-----|--------------|
-| `https://{branch}-spark-eds.workers.dev` | `https://{branch}--assethub-spark--aem-showcase.aem.page` |
-| `https://{branch}-live-spark-eds.workers.dev` | `https://{branch}--assethub-spark--aem-showcase.aem.live` |
-
+| `https://{branch}.dev.frescopamedia.com` | `https://{branch}--assethub-spark--aem-showcase.aem.page` |
 
 ### CI main
 
-On each `main` branch push, the Github ActionsCI will do the same as above and additionally deploy that same worker version to "production" worker URLs:
-
+On each `main` branch push, the Github Actions CI deploys that worker version to production:
 
 | URL | Helix origin |
 |-----|--------------|
-| https://spark-eds.workers.dev | https://main--assethub-spark--aem-showcase.aem.live |
-| https://preview-spark-eds.workers.dev | https://main--assethub-spark--aem-showcase.aem.page |
+| https://frescopamedia.com | https://main--assethub-spark--aem-showcase.aem.live |
+| https://preview.frescopamedia.com | https://main--assethub-spark--aem-showcase.aem.page |
 
 ### Manual deploy
 
@@ -198,7 +194,7 @@ Understanding how different Cloudflare resources behave across deployment enviro
 #### KV Stores
 - **Production & Branch**: Both use the **same production KV namespaces**
   - ⚠️ **No isolation**: Changes in branch preview affect production KV data
-  - Example: Saving a search in `https://mybranch-spark-eds.workers.dev` writes to production KV
+  - Example: Saving a search in `https://mybranch.dev.frescopamedia.com` writes to production KV
 - **Local**: Uses separate local KV (`.wrangler/state/v3/kv/`) - isolated from production
   - Safe for testing without affecting production data
 
@@ -374,7 +370,7 @@ General notes:
 | | `user@example.com` | Email address to address an individual user. |
 | | `*` | Any user allowed by the IDP. |
 | `permissions` | | Comma separated list of permissions |
-| | `preview`  | User has access to preview environments (eg. https://preview-spark-eds.workers.dev), including branch deployments for development. |
+| | `preview`  | User has access to preview environments (eg. https://preview.frescopamedia.com), including branch deployments for development. |
 | | `sudo` | User can use the impersonation/user simulation feature. |
 | | `admin-reports` | User has access to system reports |
 | | `admin-rights` | User has access to rights reviews (can assign to self or other reviewers) |

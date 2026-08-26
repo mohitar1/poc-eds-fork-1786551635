@@ -4,7 +4,7 @@ export default defineWorkersConfig({
   test: {
     poolOptions: {
       workers: {
-        wrangler: { configPath: './wrangler.toml' },
+        wrangler: { configPath: './wrangler.jsonc' },
         miniflare: {
           kvNamespaces: ['AUTH_TOKENS', 'SAVED_SEARCHES', 'MESSAGES'],
         },

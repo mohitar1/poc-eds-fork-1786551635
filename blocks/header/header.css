@@ -3,40 +3,19 @@
 @import url("./profile.css");
 
 :root {
-  --header-bar-height: 48px;
-  --nav-bar-height: calc(var(--nav-height) - var(--header-bar-height));
+  --nav-bar-height: var(--nav-height);
 }
 
 header {
   font-family: var(--body-font-family);
 }
 
-/* Header Bar at top of page */
-header .header-bar {
-  align-items: center;
-  background-color: var(--light-color);
-  color: var(--text-color);
-  color-scheme: light;
-  box-sizing: border-box;
-  display: flex;
-  font-family: var(--body-font-family);
-  font-size: 14px;
-  font-weight: 500;
-  justify-content: flex-end;
-  padding: 4px 24px 4px 48px;
-  height: var(--header-bar-height);
-  width: 100%;
-  position: fixed;
-  top: 0;
-  z-index: 3;
-}
-
 /* Common Dropdown Menu Styles */
-header .header-bar .dropdown-menu {
+header .dropdown-menu {
   display: none;
 }
 
-header .header-bar .dropdown-menu > ul {
+header .dropdown-menu > ul {
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0 0 14px 0 rgb(0 0 0 / 12%);
@@ -66,19 +45,19 @@ header .header-bar .dropdown-menu > ul {
   padding: 8px;
 }
 
-header .header-bar .dropdown-menu > ul > li,
+header nav .dropdown-menu > ul > li,
 .header-dropdown-portal > ul > li {
   border-bottom: 1px solid var(--light-color);
   padding: 8px 4px;
   width: 100%;
 }
 
-header .header-bar .dropdown-menu > ul > li:last-child,
+header nav .dropdown-menu > ul > li:last-child,
 .header-dropdown-portal > ul > li:last-child {
   border-bottom: none;
 }
 
-header .header-bar .dropdown-menu > ul > li a,
+header nav .dropdown-menu > ul > li a,
 .header-dropdown-portal > ul > li a {
   color: var(--text-color);
   text-decoration: none;
@@ -86,27 +65,26 @@ header .header-bar .dropdown-menu > ul > li a,
   width: 100%;
 }
 
-header .header-bar .dropdown-menu > ul > li a:hover,
+header nav .dropdown-menu > ul > li a:hover,
 .header-dropdown-portal > ul > li a:hover {
   color: var(--primary-color);
 }
 
 /* My Account Dropdown Menu - Specific Styles */
-header .header-bar .my-account .my-account-menu > ul,
+header nav .my-account .my-account-menu > ul,
 .header-dropdown-portal.my-account-portal > ul {
   min-width: 200px;
 }
 
 /* User Button (User Dropdown) */
-header .header-bar .my-account {
+header nav .my-account {
   flex-shrink: 0;
   font-size: 14px;
   font-weight: 500;
-  margin-left: auto;
   position: relative;
 }
 
-header .header-bar .my-account .my-account-button {
+header nav .my-account .my-account-button {
   align-items: center;
   background: #fff;
   border: 1px solid var(--primary-color);
@@ -114,12 +92,14 @@ header .header-bar .my-account .my-account-button {
   cursor: pointer;
   display: flex;
   font-family: var(--body-font-family);
+  font-size: 14px;
+  font-weight: 500;
   line-height: 140%;
   max-height: 40px;
   padding: 6px 16px 6px 6px;
 }
 
-header .header-bar .my-account .avatar {
+header nav .my-account .avatar {
   background-color: var(--primary-color);
   border-radius: 50%;
   font-family: var(--body-font-family);
@@ -131,7 +111,7 @@ header .header-bar .my-account .avatar {
   position: relative;
 }
 
-header .header-bar .my-account .avatar .impersonation-indicator {
+header nav .my-account .avatar .impersonation-indicator {
   position: absolute;
   top: -2px;
   right: -2px;
@@ -143,30 +123,28 @@ header .header-bar .my-account .avatar .impersonation-indicator {
   box-shadow: 0 0 4px rgb(0 0 0 / 20%);
 }
 
-header .header-bar .my-account-button:hover {
+header nav .my-account-button:hover {
   background: var(--primary-color);
 }
 
-header .header-bar .my-account-button:hover .avatar {
+header nav .my-account-button:hover .avatar {
   background-color: #fff;
 }
 
-header .header-bar .my-account-button.active {
+header nav .my-account-button.active {
   background: var(--primary-color);
 }
 
-header .header-bar .my-account-button.active .avatar {
+header nav .my-account-button.active .avatar {
   background-color: #fff;
 }
-
-
 
 /* Arrow Icons */
-header .header-bar .down-arrow-icon {
+header nav .down-arrow-icon {
   display: flex;
 }
 
-header .header-bar .down-arrow-icon::before {
+header nav .down-arrow-icon::before {
   background: url("/icons/down-arrow-icon.svg") no-repeat 50%;
   content: "";
   display: inline-block;
@@ -175,15 +153,8 @@ header .header-bar .down-arrow-icon::before {
   width: 20px;
 }
 
-header .header-bar .down-arrow-icon:hover::before {
+header nav .down-arrow-icon:hover::before {
   background: url("/icons/down-arrow-icon-red.svg") no-repeat 50%;
-}
-
-/* Mobile responsive padding */
-@media (width <=1439px) {
-  header .header-bar {
-    padding: 4px 24px 4px 48px;
-  }
 }
 
 header .nav-wrapper {
@@ -194,7 +165,7 @@ header .nav-wrapper {
   z-index: 2;
   box-shadow: 0 3px 5px #0000000D;
   position: fixed;
-  top: var(--header-bar-height);
+  top: 0;
 }
 
 /* When hamburger menu is open, ensure nav overlay sits above page content (e.g. Training Resources card icons) */
@@ -231,9 +202,9 @@ header nav:not(:has(.nav-sections)) {
     width: 320px;
     position: fixed;
     left: 0;
-    top: calc(var(--header-bar-height) + var(--nav-bar-height));
+    top: var(--nav-bar-height);
     z-index: 2;
-    height: calc(100dvh - var(--header-bar-height) - var(--nav-bar-height));
+    height: calc(100dvh - var(--nav-bar-height));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     background-color: #fff;
@@ -668,18 +639,18 @@ header nav .nav-tools {
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+  gap: 12px;
+  position: fixed;
+  right: 24px;
+  top: calc(var(--nav-bar-height) / 2);
+  transform: translateY(-50%);
+  z-index: 10;
 }
-
 
 header nav .nav-tools .nav-icons-wrapper {
   display: flex;
   flex-direction: row;
   gap: 10px;
-  position: fixed;
-  right: 24px;
-  top: calc(var(--header-bar-height) + (var(--nav-bar-height) / 2));
-  transform: translateY(-50%);
-  z-index: 10;
 }
 
 header nav .nav-tools .nav-cart-icon,
@@ -690,14 +661,11 @@ header nav .nav-tools .nav-reports-icon {
 }
 
 @media (width >=900px) {
-  header nav .nav-tools .nav-icons-wrapper {
+  header nav .nav-tools {
     position: static;
     right: auto;
     top: auto;
     transform: none;
-  }
-
-  header nav .nav-tools {
     margin-left: auto;
     flex: 0 0 auto;
   }
@@ -724,6 +692,14 @@ header nav .nav-tools .nav-download-icon button:focus,
 header nav .nav-tools .nav-message-icon button:focus,
 header nav .nav-tools .nav-reports-icon button:focus {
   outline: none;
+}
+
+header nav .nav-tools .nav-cart-icon button:focus-visible,
+header nav .nav-tools .nav-download-icon button:focus-visible,
+header nav .nav-tools .nav-message-icon button:focus-visible,
+header nav .nav-tools .nav-reports-icon button:focus-visible {
+  box-shadow: var(--focus-ring, 0 0 0 3px #00647D);
+  border-radius: 6px;
 }
 
 header nav .nav-tools .nav-cart-icon button img,
@@ -824,7 +800,7 @@ header .header-welcome-bar {
   display: flex;
   align-items: center;
   background-color: var(--light-color);
-  height: var(--header-bar-height);
+  height: var(--nav-height);
   padding: 0 24px;
   position: fixed;
   top: 0;

@@ -65,6 +65,20 @@ export async function createImageGallery(container, callbacks) {
   let previousImageCount = 0; // Track image count for Load More optimization
 
   /**
+   * Notify listeners (e.g. search-bar's generate-mode) that the selection changed.
+   * Decouples image-gallery from search-bar — same CustomEvent-on-window pattern
+   * already used for handleBulkShare/handleBulkAddToCollection below.
+   */
+  function dispatchAssetSelectionChanged() {
+    const state = getState();
+    const visibleImages = state.dmImages;
+    const selectedAssets = visibleImages.filter((img) => selectedCards.has(img.assetId || ''));
+    window.dispatchEvent(new CustomEvent('assetSelectionChanged', {
+      detail: { selectedAssets },
+    }));
+  }
+
+  /**
    * Update only the selection count in search panel without re-rendering the entire panel
    */
   function updateSelectionUI() {
@@ -99,6 +113,8 @@ export async function createImageGallery(container, callbacks) {
         updateDropdownSelection(actionsDropdown, ph(placeholders, 'actions', 'Actions'));
       }
     }
+
+    dispatchAssetSelectionChanged();
   }
 
   // Build gallery structure
@@ -135,8 +151,16 @@ export async function createImageGallery(container, callbacks) {
       
       <div class="image-grid-wrapper">
         ${isLoading && visibleImages.length === 0 ? `
-          <div class="loading-container" role="status" aria-live="polite">
-            <div class="loading-spinner loading-spinner-lg" aria-hidden="true"></div>
+          <div class="skeleton-grid" role="status" aria-label="Loading assets" aria-live="polite">
+            ${Array.from({ length: 8 }, () => `
+              <div class="skeleton-card" aria-hidden="true">
+                <div class="skeleton-card-image"></div>
+                <div class="skeleton-card-body">
+                  <div class="skeleton-line skeleton-line-medium"></div>
+                  <div class="skeleton-line skeleton-line-short"></div>
+                </div>
+              </div>
+            `).join('')}
           </div>
         ` : ''}
         ${isLoading && visibleImages.length > 0 ? '<div class="search-overlay"></div>' : ''}

@@ -1,4 +1,5 @@
 import { json } from 'itty-router';
+import config from './config.js';
 import { hasPermission, PERMISSIONS } from '../../scripts/auth/permissions.js';
 import { fetchHelixSheet } from './util/helixutil.js';
 
@@ -94,6 +95,23 @@ async function getUserAttributes(request, env, user) {
   return attributes;
 }
 
+/**
+ * Resolve the permission list for an email from the /config/access/application
+ * sheet, merging the wildcard (`*`), the email domain, and the exact-email rows.
+ * Shared by login (createSession) and impersonation (handleSudo).
+ */
+async function resolvePermissions(request, env, email) {
+  const domain = getEmailDomain(email);
+  const access = await fetchHelixSheet(request, env, '/config/access/application', {
+    sheet: { key: 'email', arrays: ['permissions'] },
+  });
+  return [
+    ...(access?.['*']?.permissions || []),
+    ...(access?.[domain]?.permissions || []),
+    ...(access?.[email]?.permissions || []),
+  ];
+}
+
 async function handleSudo(request, env, user) {
   if (['SUDO_NAME', 'SUDO_EMAIL', 'SUDO_COUNTRY', 'SUDO_EMPLOYEE_TYPE'].some((c) => request.cookies[c])) {
     if (!hasPermission(user, PERMISSIONS.SUDO)) {
@@ -101,26 +119,46 @@ async function handleSudo(request, env, user) {
       return user;
     }
 
+    // Capture the complete real, pre-simulation identity — not just the fields this
+    // cookie set happens to override — so callers can fully restore it (e.g. to
+    // build a permission check as if simulation weren't active) rather than only
+    // being able to recover individual fields piecemeal.
     user.su = {
       name: user.name,
       email: user.email,
       country: user.country,
       employeeType: user.employeeType,
+      roles: user.roles,
+      userType: user.userType,
+      countries: user.countries,
+      permissions: user.permissions,
     };
 
     user.name = request.cookies.SUDO_NAME || user.name;
     user.email = request.cookies.SUDO_EMAIL || user.email;
-    user.country = request.cookies.SUDO_COUNTRY || user.country;
     user.employeeType = request.cookies.SUDO_EMPLOYEE_TYPE || user.employeeType;
 
     const sudoDomain = getEmailDomain(user.email);
     const attributes = await getUserAttributes(request, env, {
       email: user.email,
       domain: sudoDomain,
-      country: user.country,
       employeeType: user.employeeType,
     });
-    user = { ...user, domain: sudoDomain, ...attributes };
+    // Country is optional: dropdown pick (SUDO_COUNTRY) wins; else fall back to the
+    // simulated user's own sheet country (first of the users-sheet countries),
+    // never the real admin's country. Lowercased for consistent matching/display.
+    user.country = (request.cookies.SUDO_COUNTRY || attributes.countries?.[0] || '').toLowerCase();
+    // The simulated identity is always treated as non-admin for asset filtering,
+    // even if the (possibly unchanged) email/domain would otherwise resolve to an
+    // admin role — simulating anything means testing as a regular user.
+    attributes.roles = attributes.roles.filter((role) => role !== ROLE.ADMIN);
+    // Re-resolve permissions for the impersonated target, minus `sudo` itself:
+    // impersonation must never let the simulated identity chain into another sudo.
+    // Without this, report/audit permission gates kept evaluating against the real
+    // admin's permissions no matter who was being simulated.
+    const sudoPermissions = (await resolvePermissions(request, env, user.email))
+      .filter((p) => p !== PERMISSIONS.SUDO);
+    user = { ...user, domain: sudoDomain, ...attributes, permissions: sudoPermissions };
   }
 
   return user;
@@ -139,18 +177,10 @@ export async function createSession(request, env) {
   const email = idToken.email?.toLowerCase();
   const domain = getEmailDomain(email);
 
-  const access = await fetchHelixSheet(request, env, '/config/access/application', {
-    sheet: { key: 'email', arrays: ['permissions'] },
-  });
-
-  const permissions = [
-    ...(access?.['*']?.permissions || []),
-    ...(access?.[domain]?.permissions || []),
-    ...(access?.[email]?.permissions || []),
-  ];
+  const permissions = await resolvePermissions(request, env, email);
 
   const host = request.headers.get('host') || '';
-  const liveHosts = ['localhost', 'spark-eds.adobe.workers.dev'];
+  const liveHosts = ['localhost', 'frescopamedia.com'];
   const isNonLiveHost = !liveHosts.some((h) => host === h || host.startsWith(`${h}:`));
   if (isNonLiveHost) {
     if (!permissions.includes('preview')) {
@@ -196,11 +226,11 @@ export async function getUser(request, env, session) {
 /**
  * Request handler returning the user information as JSON API for the frontend.
  */
-export async function apiUser(request, env) {
+export async function apiUser(request, _env) {
   const user = {
     ...request.user,
     sessionExpiresInSec: request.user.exp && Math.floor((request.user.exp * 1000 - Date.now()) / 1000),
-    aemLoginUrl: env.AEM_ENV_ID ? `https://publish-${env.AEM_ENV_ID}.adobeaemcloud.com/content/share/us/en.html` : '',
+    aemLoginUrl: config.AEM_ENV_ID ? `https://publish-${config.AEM_ENV_ID}.adobeaemcloud.com/content/share/us/en.html` : '',
   };
 
   delete user.sub;

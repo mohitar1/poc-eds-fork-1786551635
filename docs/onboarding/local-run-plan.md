@@ -114,6 +114,18 @@ is recorded in the state file.
 
 ## Boot verification (B.11) — the stale-directory failure mode
 
+**Sync-with-main before boot (ask, never auto).** The local `aem up`
+server serves the fork's published `main` content (per I3 and the B.4
+origin), so a customer booting "to see their site" should be on the
+latest code first. B.11 fetches and checks whether the branch is behind
+`origin/main`; if so it *offers* to pull/merge and lets the customer
+decide — it never auto-merges, since that can conflict or pull unwanted
+changes, matching the agent-prepares/customer-decides posture used
+everywhere git is mutated. (Considered and rejected: committing the
+`.internal` state file for cross-machine resume — it holds customer
+identity, `.internal` is gitignored on purpose, and same-machine resume
+already works from the on-disk file.)
+
 Run `npm run dev`, open the **worker** port (it serves `/api/*`, not the
 aem-up port). Then verify, in order:
 

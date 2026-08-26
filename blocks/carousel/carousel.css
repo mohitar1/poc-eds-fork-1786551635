@@ -200,6 +200,11 @@
   }
 }
 
+.carousel.tiles .carousel-navigation-buttons {
+    left: -20px;
+    right: -20px;
+}
+
 .carousel .carousel-navigation-buttons button {
     position: relative;
     width: 40px;
@@ -333,8 +338,16 @@
 /* Tiles variant: light card style matching main .section.category-tiles .cards */
 .carousel.tiles .carousel-slide {
     border: 1px solid rgb(88 24 29 / 8%);
-    border-radius: 14px;
-    box-shadow: 0 6px 18px rgb(88 24 29 / 6%);
+    border-radius: 12px;
+    box-shadow: 0 8px 22px rgb(88 24 29 / 8%);
+}
+
+/* Desktop only: 5 tiles per row (~224px) to match the reference card size.
+   Below 1023px the base .carousel responsive rules (3/2/1-up) still apply. */
+@media (width > 1023px) {
+    .carousel.tiles .carousel-slide {
+        flex: 0 0 calc((100% - 64px) / 5);
+    }
 }
 
 .carousel.tiles .carousel-slide:hover {
@@ -343,21 +356,45 @@
 }
 
 .carousel.tiles .carousel-slide-image {
-    aspect-ratio: 4 / 3;
-    height: auto;
+    height: 132px;
+    aspect-ratio: auto;
+    box-sizing: border-box;
+    padding: 24px 20px 8px;
     background: var(--background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel.tiles .carousel-slide-image picture {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel.tiles .carousel-slide-image picture > img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100px;
+    object-fit: contain;
 }
 
 .carousel.tiles .carousel-slide-content {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
+    gap: 6px;
     min-height: 0;
+    box-sizing: border-box;
+    width: 100%;
     text-align: left;
     background: transparent;
     color: var(--text-color);
-    padding: 22px;
+    padding: 16px 18px 18px;
     border-radius: 0;
 }
 
@@ -412,4 +449,19 @@
 .carousel.tiles .carousel-navigation-buttons button:hover:not(:disabled)::after,
 .carousel.tiles .carousel-navigation-buttons button:focus-visible:not(:disabled)::after {
     border-color: var(--primary-color);
+}
+
+/* Keep the icon box uniform but proportionate on smaller screens */
+@media (width <= 1023px) {
+    .carousel.tiles .carousel-slide-image {
+        height: 124px;
+        padding: 20px 16px 6px;
+    }
+}
+
+@media (width <= 480px) {
+    .carousel.tiles .carousel-slide-image {
+        height: 124px;
+        padding: 20px 16px 6px;
+    }
 }

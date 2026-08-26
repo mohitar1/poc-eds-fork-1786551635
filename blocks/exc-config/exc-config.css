@@ -1,0 +1,29 @@
+/*
+ * exc-config block
+ *
+ * The block has no visible output in production — it is purely a config
+ * carrier that writes to window.SearchResultsConfig.externalParams.
+ *
+ * In preview (localhost / .page) a validation error box is rendered when
+ * the author table contains invalid rows.
+ */
+
+.exc-config.block {
+  display: none;
+}
+
+/* Shown only in preview when validation errors are present */
+.exc-config.block:has(.exc-config-errors) {
+  display: block;
+}
+
+.exc-config-errors {
+  background: #fef2f2;
+  border: 1px solid #ef4444;
+  border-radius: 4px;
+  color: #991b1b;
+  font-family: monospace;
+  font-size: 12px;
+  margin-bottom: 12px;
+  padding: 12px;
+}

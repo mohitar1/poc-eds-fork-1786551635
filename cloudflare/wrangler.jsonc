@@ -1,0 +1,144 @@
+{
+  "name": "spark-eds",
+  "account_id": "5950b56d4c83856bae7035a7b9e7ce99",
+  "main": "src/index.js",
+  "compatibility_date": "2025-08-16",
+  "workers_dev": false,
+  "d1_databases": [
+    {
+      "binding": "USER_LOGINS",
+      "database_name": "spark-user-logins",
+      "database_id": "3db42334-a8ba-48cc-b5bd-84f7e1b04eb2"
+    },
+    {
+      "binding": "AUDIT_EVENTS",
+      "database_name": "spark-audit-events",
+      "database_id": "3db42334-a8ba-48cc-b5bd-84f7e1b04eb2"
+    },
+    {
+      "binding": "SEARCH_EVENTS",
+      "database_name": "spark-search-events",
+      "database_id": "3db42334-a8ba-48cc-b5bd-84f7e1b04eb2"
+    }
+  ],
+  "observability": {
+    "logs": {
+      "enabled": true
+    }
+  },
+  "env": {
+    // production environment (main branch)
+    "production": {
+      "name": "spark-eds-production",
+      "routes": [
+        {
+          "pattern": "frescopamedia.com/*",
+          "zone_name": "frescopamedia.com"
+        }
+      ],
+      // preview.frescopamedia.com is attached as a Workers Custom Domain
+      // (Dashboard: Workers & Pages > spark-eds-production > Settings >
+      // Domains & Routes), not a Route here.
+      "vars": {
+        // AEM EDS live origin for production. Kept here (not injected via
+        // --var at deploy time) so a var-less `wrangler deploy` cannot wipe it
+        // and leave env.HELIX_ORIGIN undefined -> originHelix crash -> 1101.
+        // index.js swaps .aem.live -> .aem.page at runtime for the preview host.
+        "HELIX_ORIGIN": "https://main--assethub-spark--aem-showcase.aem.live"
+      },
+      "kv_namespaces": [
+        {
+          "binding": "AUTH_TOKENS",
+          "id": "36672f6acf244f80855367c1322110d5"
+        }
+      ],
+      "secrets_store_secrets": [
+        {
+          "store_id": "a6f677643a894c5c99d08a280e61e605",
+          "binding": "COOKIE_SECRET",
+          "secret_name": "SPARK_COOKIE_SECRET"
+        },
+        {
+          "store_id": "a6f677643a894c5c99d08a280e61e605",
+          "binding": "HELIX_ORIGIN_AUTHENTICATION",
+          "secret_name": "SPARK_HELIX_ORIGIN_AUTHENTICATION"
+        },
+        {
+          "store_id": "a6f677643a894c5c99d08a280e61e605",
+          "binding": "DM_CLIENT_ID",
+          "secret_name": "SPARK_DM_CLIENT_ID"
+        },
+        {
+          "store_id": "a6f677643a894c5c99d08a280e61e605",
+          "binding": "DM_CLIENT_SECRET",
+          "secret_name": "SPARK_DM_CLIENT_SECRET"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "USER_LOGINS",
+          "database_name": "spark-user-logins",
+          "database_id": "3db42334-a8ba-48cc-b5bd-84f7e1b04eb2"
+        },
+        {
+          "binding": "AUDIT_EVENTS",
+          "database_name": "spark-audit-events",
+          "database_id": "3db42334-a8ba-48cc-b5bd-84f7e1b04eb2"
+        },
+        {
+          "binding": "SEARCH_EVENTS",
+          "database_name": "spark-search-events",
+          "database_id": "3db42334-a8ba-48cc-b5bd-84f7e1b04eb2"
+        }
+      ]
+    },
+    // branch environment (PRs/branches and local dev)
+    "branch": {
+      "kv_namespaces": [
+        {
+          "binding": "AUTH_TOKENS",
+          "id": "36672f6acf244f80855367c1322110d5"
+        }
+      ],
+      "secrets_store_secrets": [
+        {
+          "store_id": "a6f677643a894c5c99d08a280e61e605",
+          "binding": "COOKIE_SECRET",
+          "secret_name": "SPARK_COOKIE_SECRET"
+        },
+        {
+          "store_id": "a6f677643a894c5c99d08a280e61e605",
+          "binding": "HELIX_ORIGIN_AUTHENTICATION",
+          "secret_name": "SPARK_HELIX_ORIGIN_AUTHENTICATION"
+        },
+        {
+          "store_id": "a6f677643a894c5c99d08a280e61e605",
+          "binding": "DM_CLIENT_ID",
+          "secret_name": "SPARK_DM_CLIENT_ID"
+        },
+        {
+          "store_id": "a6f677643a894c5c99d08a280e61e605",
+          "binding": "DM_CLIENT_SECRET",
+          "secret_name": "SPARK_DM_CLIENT_SECRET"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "USER_LOGINS",
+          "database_name": "spark-user-logins",
+          "database_id": "3db42334-a8ba-48cc-b5bd-84f7e1b04eb2"
+        },
+        {
+          "binding": "AUDIT_EVENTS",
+          "database_name": "spark-audit-events",
+          "database_id": "3db42334-a8ba-48cc-b5bd-84f7e1b04eb2"
+        },
+        {
+          "binding": "SEARCH_EVENTS",
+          "database_name": "spark-search-events",
+          "database_id": "3db42334-a8ba-48cc-b5bd-84f7e1b04eb2"
+        }
+      ]
+    }
+  }
+}

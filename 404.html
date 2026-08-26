@@ -3,10 +3,6 @@
 
 <head>
   <title>Page not found</title>
-  <script type="text/javascript">
-    window.isErrorPage = true;
-    window.errorCode = '404';
-  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta property="og:title" content="Page not found">
   <link rel="stylesheet" href="/styles/styles.css">
@@ -20,10 +16,81 @@
 <body>
   <header></header>
   <main>
-    <div class="section">
-      <p>Loading...</p>
+    <div class="section error-page">
+      <div class="error-page-content">
+        <span class="error-code">404</span>
+        <h1>Oops! Page not found.</h1>
+        <p>We couldn't find the page you were looking for.<br>
+          Please check the address or return to the homepage.</p>
+        <a href="/en/" class="button">Go home</a>
+      </div>
     </div>
   </main>
+  <style>
+    .section.error-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100dvh - 120px);
+      text-align: center;
+    }
+
+    .error-page-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      max-width: 480px;
+      padding: 40px 24px;
+    }
+
+    .error-code {
+      font-family: baskerville, serif;
+      font-size: 96px;
+      line-height: 1;
+      color: #2f2318;
+      opacity: 0.12;
+      font-weight: 300;
+      letter-spacing: -4px;
+      display: block;
+      margin-bottom: -8px;
+    }
+
+    .error-page-content h1 {
+      font-family: baskerville, serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: #2f2318;
+      margin: 0;
+    }
+
+    .error-page-content p {
+      font-size: 15px;
+      color: #6b6b6b;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .error-page-content .button {
+      margin-top: 8px;
+      display: inline-block;
+      padding: 12px 32px;
+      border-radius: 100px;
+      border: 1.5px solid #2f2318;
+      color: #2f2318;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .error-page-content .button:hover {
+      background: #2f2318;
+      color: #fff;
+    }
+  </style>
   <footer></footer>
 </body>
 

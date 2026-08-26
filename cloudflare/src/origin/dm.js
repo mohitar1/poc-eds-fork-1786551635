@@ -21,11 +21,13 @@
  */
 
 import { decodeJwt } from 'jose';
+import config from '../config.js';
 import {
   CollectionCreatedByMeVisibility,
   CollectionListSegment,
 } from '../../../scripts/collections/collection-search-constants.js';
-import { ROLE } from '../user.js';
+import { ROLE, USER_TYPE } from '../user.js';
+import { resolveCountryMatchValues } from '../constants/countries.js';
 import { enforceAssetMetadataAuthorization } from './asset-access.js';
 import {
   extractSearchContext,
@@ -525,10 +527,15 @@ function forceContentAISearchFilter(search, authClauses) {
 /**
  * Build ContentAI authorization clauses for asset search and metadata access.
  *
- * Asset visibility is controlled by two metadata fields tagged on Content Hub assets:
+ * Asset visibility is controlled by metadata fields tagged on Content Hub assets:
  *   - `custom:userType`  — who can see the asset: 'internal', 'external', or 'all'
- *   - `allowedCountries`   — which countries can see the asset: ISO-3166-1 alpha-2 codes
- *                          or the special sentinel 'global' (visible to all countries)
+ *   - `allowedCountries`   — which countries can see the asset: ISO-3166-1 alpha-2 codes,
+ *                          full lowercase country names (e.g. 'usa', 'india'), or the
+ *                          special sentinel 'global' (visible to all countries)
+ *   - `internalStatus`     — external users only see 'approved' assets, or assets where the
+ *                          field is absent entirely (checked explicitly via an exists clause,
+ *                          not relied on as undocumented `term` behavior); internal users see
+ *                          all values (e.g. 'preview', 'fpo')
  *
  * User attributes that drive filtering (resolved at login, stored in session):
  *   - `user.userType`   — 'internal' or 'external', derived from email domain + sheet overrides
@@ -543,10 +550,21 @@ function forceContentAISearchFilter(search, authClauses) {
  *
  * @param {Request} request - Cloudflare request with `request.user` populated by auth middleware
  * @param {Object} _env - Cloudflare environment bindings (unused, reserved for future sheet lookups)
+ * @param {Object} [options]
+ * @param {boolean} [options.useRealPermissions=false] - Evaluate as the real, pre-simulation
+ *   identity (`request.user.su`) in its entirety — roles, country, userType, everything —
+ *   instead of whatever is currently simulated. No effect when not simulating.
  * @returns {Promise<Object[]>} ContentAI query clause array
  */
-async function buildAssetAuthClauses(request, _env) {
-  const user = request.user;
+async function buildAssetAuthClauses(request, _env, { useRealPermissions = false } = {}) {
+  // Callers that need to discover what's generally available (e.g. populating the
+  // country picker used to change simulation) evaluate as the real, pre-simulation
+  // identity rather than whichever attributes are currently simulated. Restoring the
+  // whole identity (not just individual fields) keeps this correct as new simulated
+  // attributes are added, and keeps every check below unchanged/unaware of simulation.
+  const user = (useRealPermissions && request.user.su)
+    ? { ...request.user, ...request.user.su }
+    : request.user;
 
   // Admins bypass all asset filters — they see everything in Content Hub.
   if (user.roles?.includes(ROLE.ADMIN)) {
@@ -554,17 +572,24 @@ async function buildAssetAuthClauses(request, _env) {
     return [];
   }
 
+  const clauses = [];
+
   // --- Country filter ---
   // Collect all country codes the user is authorised for:
   //   1. The user's own country from the Entra ID JWT claim (ctry).
   //   2. Any additional countries granted via the /config/access/users sheet.
   //   3. The 'global' sentinel always included so globally-tagged assets are never blocked.
+  // Assets may be tagged with either the ISO code or the full lowercase country name, so
+  // each resolved code is expanded to include its mapped name (see constants/countries.js).
   const authorisedCountries = [];
-  if (user.country) authorisedCountries.push(user.country);
-  if (Array.isArray(user.countries)) {
-    user.countries.forEach((c) => {
-      if (c && !authorisedCountries.includes(c)) authorisedCountries.push(c);
+  const addCountry = (c) => {
+    resolveCountryMatchValues(c).forEach((value) => {
+      if (value && !authorisedCountries.includes(value)) authorisedCountries.push(value);
     });
+  };
+  if (user.country) addCountry(user.country);
+  if (Array.isArray(user.countries)) {
+    user.countries.forEach(addCountry);
   }
   if (!authorisedCountries.includes('global')) authorisedCountries.push('global');
 
@@ -572,23 +597,46 @@ async function buildAssetAuthClauses(request, _env) {
   // no point injecting a clause that only allows 'global' tagged assets.
   if (authorisedCountries.length === 1 && authorisedCountries[0] === 'global') {
     console.warn(`[${user.email}] no country resolved — skipping country filter`);
-    return [];
+  } else {
+    console.warn(`[${user.email}] asset auth clauses: countries=[${authorisedCountries.join(',')}]`);
+    clauses.push({ term: { 'assetMetadata.allowedCountries': authorisedCountries } });
   }
 
-  console.warn(`[${user.email}] asset auth clauses: countries=[${authorisedCountries.join(',')}]`);
-  return [{ term: { 'assetMetadata.allowedCountries': authorisedCountries } }];
+  // --- Internal status filter ---
+  // External users only see assets tagged internalStatus=approved, or where the
+  // field is absent entirely. Don't rely on term's undocumented behavior for
+  // missing fields — explicit exists-check avoids depending on backend semantics
+  // that aren't confirmed by the ContentAI/Content Hub API schema.
+  if (user.userType !== USER_TYPE.INTERNAL) {
+    clauses.push({
+      or: [
+        { term: { 'assetMetadata.internalStatus': ['approved'] } },
+        { not: [{ exists: { field: 'assetMetadata.internalStatus' } }] },
+      ],
+    });
+  }
+
+  return clauses;
 }
 
 /**
  * ContentAI Search: search authorization for assets
  * Mimics searchAuthorization logic but generates ContentAI query clauses
+ *
+ * A request body may set `useRealPermissions: true` (stripped before forwarding
+ * upstream) to build the filter from the real, pre-simulation identity rather than
+ * the currently-simulated one — used by the simulation country picker so it always
+ * offers every country the real user could see, not just the simulated subset.
  * @param {Object} request - Request object with user info
  * @param {Object} env - Environment object
  * @param {Object} search - ContentAI search object to modify
  */
 async function searchContentAIAuthorization(request, env, search) {
+  const useRealPermissions = search.useRealPermissions === true;
+  if (search.useRealPermissions !== undefined) delete search.useRealPermissions;
+
   // ContentAI search request. Enforce filters that ensure only authorized assets are returned
-  const authClauses = await buildAssetAuthClauses(request, env);
+  const authClauses = await buildAssetAuthClauses(request, env, { useRealPermissions });
 
   // Empty array means admin - no constraints needed (already logged in buildAssetAuthClauses)
   if (authClauses.length === 0) {
@@ -736,7 +784,6 @@ function collectionsSearchContentAIAuthorization(request, search, options = {}) 
  * @param {Request} request - Incoming HTTP request
  * @param {Object} request.user - Authenticated user object (added by auth middleware)
  * @param {Object} env - Cloudflare environment bindings
- * @param {string} env.AEM_ENV_ID - AEM environment ID (format: pXXXXX-eYYYYY)
  * @param {KVNamespace} env.AUTH_TOKENS - KV store for IMS token caching
  * @param {AnalyticsEngine} env.SPARK_ANALYTICS_ENGINE - Analytics Engine binding
  * @param {ExecutionContext} ctx - Cloudflare execution context (for waitUntil)
@@ -754,7 +801,7 @@ export async function originDynamicMedia(request, env, ctx) {
   // origin url:
   //   delivery-pXX-eYY.adobeaemcloud.com/adobe/assets/...
 
-  const aemEnvId = env.AEM_ENV_ID;
+  const aemEnvId = config.AEM_ENV_ID;
   if (!aemEnvId.match(/^p(.*)-e(.*)$/)) {
     return new Response('Invalid AEM_ENV_ID', { status: 500 });
   }
@@ -887,29 +934,16 @@ export async function originDynamicMedia(request, env, ctx) {
     if (authResponse) return authResponse;
   }
 
-  const isSearchOrCollections = url.pathname.includes('/search') || url.pathname.includes('/collections');
-  const isArchive = url.pathname.includes('/archives');
-  if (isSearchOrCollections || isArchive) {
-    const debugHeaders = [
-      'authorization',
-      'x-api-key',
-      'x-ch-request',
-      'x-polaris-search-provider',
-      'x-adobe-accept-experimental',
-    ];
-    const curlHeaders = [...headers.entries()]
-      .filter(([k]) => debugHeaders.includes(k.toLowerCase()))
-      .map(([k, v]) => `-H '${k}: ${v}'`)
-      .join(' \\\n  ');
-    const curlBody = body ? `-d '${body.replace(/'/g, "\\'")}'` : '';
-    console.warn(
-      `[DM CURL] curl -X ${request.method} '${url}' \\\n  ${curlHeaders}${curlBody ? ` \\\n  ${curlBody}` : ''}`,
-    );
-  }
-
   // The browser's Referer can be enormous (search URLs with many facet filters
   // easily reach 3KB+) and push total headers past the upstream's 8KB limit → 400.
   headers.delete('referer');
+
+  // The incoming request's Content-Length reflects the original browser-sent body.
+  // Search (and other) handlers above may have re-serialized `body` after injecting
+  // auth clauses, changing its byte length — a stale Content-Length here causes the
+  // upstream to read a truncated/misframed body ("Expecting value" JSON parse errors).
+  // Let fetch() (via undici) compute the correct Content-Length from the actual body.
+  headers.delete('content-length');
 
   const response = await fetch(url, {
     method: request.method,
@@ -978,4 +1012,6 @@ export {
   collectionsSearchContentAIAuthorization,
   forceContentAISearchFilter,
   searchContentAIAuthorization,
+  // IMS token (shared with coa.js — same DM S2S technical account, same x-api-key)
+  getIMSToken,
 };

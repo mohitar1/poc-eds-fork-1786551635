@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "intent": "backend-only",
+  "customer": {
+    "name": null,
+    "githubOrg": "acme-co",
+    "githubRepo": "acme-portal",
+    "aemEnvId": "p12345-e67890",
+    "authBypassActive": null
+  },
+  "phases": {
+    "rebrand": {
+      "status": "not-requested",
+      "lastUpdated": "2026-08-11T09:00:00Z",
+      "steps": {
+        "brand-inputs-collected": "pending",
+        "permissions-checked": "pending",
+        "design-tokens-applied": "pending",
+        "asset-colors-swept": "pending",
+        "content-register-rewritten": "pending",
+        "published": "pending",
+        "landed-via-pr": "pending",
+        "asset-color-sweep-verified": "pending"
+      }
+    },
+    "backend-onboarding": {
+      "status": "in_progress",
+      "lastUpdated": "2026-08-11T09:20:00Z",
+      "scopeChoice": "local-no-login",
+      "steps": {
+        "node-version-check": "done",
+        "fork-identity-resolved": "done",
+        "code-sync-verified": "done",
+        "helix-url-and-readme-corrected": "done",
+        "tier-selected": "done",
+        "content-hub-creds-collected": "done",
+        "auth-mode-applied": "pending",
+        "boot-verified": "pending",
+        "deploy-bypass-gated": "pending",
+        "intake-file-generated": "pending",
+        "repo-identity-rename-applied": "pending",
+        "remote-secrets-pushed": "pending",
+        "remote-d1-migrated": "pending",
+        "ci-token-set": "pending",
+        "deployed-via-merge": "pending"
+      }
+    }
+  }
+}
