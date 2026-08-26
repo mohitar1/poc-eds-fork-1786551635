@@ -32,6 +32,8 @@ export function fieldsToProperties(fields, scope) {
     [FIELD.BRAND]: fields.brand ?? null,
     [FIELD.COMPANY]: scope.company,
     [FIELD.STATUS]: scope.status,
+    [FIELD.ALLOWED_COUNTRIES]: scope.allowedCountries ?? null,
+    [FIELD.INTERNAL_STATUS]: scope.internalStatus ?? null,
   };
 }
 
@@ -111,7 +113,7 @@ export async function enrichAssetsClassic({
 }) {
   const report = new Report();
   const { customerKey } = options;
-  const scope = { company: customerKey, status: STATUS_APPROVED };
+  const scope = { company: customerKey, status: STATUS_APPROVED, allowedCountries: 'global', internalStatus: 'approved' };
   const folderPath = options.damPath || `/content/dam/${customerKey}`;
 
   // Select upload strategy: repository (preferred when apiKey present), classic (fallback).

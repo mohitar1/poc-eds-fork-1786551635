@@ -95,6 +95,8 @@ export const FIELD = {
   BRAND: 'brand',
   COMPANY: 'company',
   STATUS: 'dam:status',
+  ALLOWED_COUNTRIES: 'allowedCountries',
+  INTERNAL_STATUS: 'internalStatus',
 };
 
 export const STATUS_APPROVED = 'approved';
