@@ -46,6 +46,7 @@
 }
 
 .reports-hub-header h1 {
+  font-family: var(--body-font-family);
   font-size: 40px;
   font-weight: 700;
   color: #333;
@@ -76,6 +77,7 @@
 }
 
 .reports-section-title {
+  font-family: var(--body-font-family);
   font-size: 28px;
   font-weight: 700;
   color: #333;

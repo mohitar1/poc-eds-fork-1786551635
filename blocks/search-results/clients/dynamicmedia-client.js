@@ -398,20 +398,28 @@ export class DynamicMediaClient {
    * @returns {Object} ContentAI match query object
    */
   // eslint-disable-next-line class-methods-use-this
-  buildMatchQuery(text) {
-    const { searchMode } = getExternalParams();
-    const mode = searchMode ? searchMode.toUpperCase() : 'FULLTEXT';
+  buildMatchQuery(text, searchMode) {
+    // Live user-selected mode (search-bar mode selector, passed in via options) takes
+    // precedence over the static block-authored config, which stays as the fallback default.
+    const { searchMode: configSearchMode } = getExternalParams();
+    const mode = (searchMode || configSearchMode || 'FULLTEXT').toUpperCase();
     return {
       match: {
         text,
         ...(mode !== 'FULLTEXT' && { mode }),
+        // `fields` is only defined on FullTextMatchQuery in the API's discriminator-mapped
+        // schema (HybridMatchQuery declares no extra properties) — sending it for HYBRID
+        // causes a strict-deserialization failure ("Error while deserializing And query")
+        // on the backend. Only include it for FULLTEXT.
         // TPTODO: remove once number/date fields are no longer searchable
-        fields: [
-          'assetMetadata.dc:title',
-          'assetMetadata.autogen:title',
-          'assetMetadata.dc:description',
-          'assetMetadata.autogen:description',
-        ],
+        ...(mode === 'FULLTEXT' && {
+          fields: [
+            'assetMetadata.dc:title',
+            'assetMetadata.autogen:title',
+            'assetMetadata.dc:description',
+            'assetMetadata.autogen:description',
+          ],
+        }),
         // "fields" is optional. Per ASSETS-64808: If omitted, the backend will search
         // across all searchable fields configured in the CH UI for that customer.
       },
@@ -427,12 +435,19 @@ export class DynamicMediaClient {
    * @param {string} text - Raw search text
    * @returns {Object} ContentAI query object (match or { or: [...] })
    */
-  buildTextSearchQuery(text) {
-    if (!text) return this.buildMatchQuery('');
+  buildTextSearchQuery(text, searchMode) {
+    if (!text) return this.buildMatchQuery('', searchMode);
+
+    // The #tag/numeric OR-splitting shortcut below is a keyword-search convenience;
+    // it doesn't apply to semantic/natural-language queries, which should pass through
+    // to buildMatchQuery untouched so the full sentence reaches the match clause intact.
+    const { searchMode: configSearchMode } = getExternalParams();
+    const mode = (searchMode || configSearchMode || 'FULLTEXT').toUpperCase();
+    if (mode !== 'FULLTEXT') return this.buildMatchQuery(text, searchMode);
 
     // Split by OR (case-insensitive) surrounded by whitespace
     const parts = text.split(/\s+OR\s+/i);
-    if (parts.length < 2) return this.buildMatchQuery(text);
+    if (parts.length < 2) return this.buildMatchQuery(text, searchMode);
 
     const stripQuotes = (s) => {
       const t = s.trim();
@@ -448,10 +463,10 @@ export class DynamicMediaClient {
     const operands = parts.map((p) => stripQuotes(p));
 
     if (operands.every((o) => isOrEligible(o))) {
-      return this.chunkIntoOr(operands.map((o) => this.buildMatchQuery(o)));
+      return this.chunkIntoOr(operands.map((o) => this.buildMatchQuery(o, searchMode)));
     }
 
-    return this.buildMatchQuery(text);
+    return this.buildMatchQuery(text, searchMode);
   }
 
   /**
@@ -462,7 +477,9 @@ export class DynamicMediaClient {
    * @returns {Array} ContentAI query array
    */
   buildQueryArray(query, options) {
-    const { numericFilters = [], filters = [], facetFilters = [] } = options;
+    const {
+      numericFilters = [], filters = [], facetFilters = [], searchMode,
+    } = options;
 
     // Check if query is an assetId (URN format or bare UUID)
     const trimmedQuery = query?.trim() || '';
@@ -478,7 +495,7 @@ export class DynamicMediaClient {
         },
       };
     } else {
-      searchQuery = this.buildTextSearchQuery(trimmedQuery);
+      searchQuery = this.buildTextSearchQuery(trimmedQuery, searchMode);
     }
 
     // Filter non-expired assets: no expiration date OR expiration date > now
@@ -696,10 +713,13 @@ export class DynamicMediaClient {
       hitsPerPage = 24,
       cursor = null,
       orderBy = buildOrderBy(SORT_TYPE.LAST_MODIFIED, SORT_DIRECTION.DESCENDING),
+      searchMode,
     } = options;
 
     const request = {
-      query: this.buildQueryArray(query, { numericFilters, filters, facetFilters }),
+      query: this.buildQueryArray(query, {
+        numericFilters, filters, facetFilters, searchMode,
+      }),
       limit: hitsPerPage,
     };
 
@@ -727,6 +747,7 @@ export class DynamicMediaClient {
       facetFilters = [],
       numericFilters = [],
       filters = [],
+      searchMode,
     } = options;
 
     const facetsArray = this.buildFacetsArray(facetKeys, facetFilters, numericFilters);
@@ -735,7 +756,7 @@ export class DynamicMediaClient {
     }
 
     return {
-      query: this.buildQueryArray(query, { numericFilters, filters }),
+      query: this.buildQueryArray(query, { numericFilters, filters, searchMode }),
       limit: 0,
       facets: facetsArray,
     };
@@ -852,16 +873,26 @@ export class DynamicMediaClient {
    * @param {Object} options - Search options
    * @param {string} [options.collectionId] - Collection ID for searching within a collection
    * @param {boolean} [options.skipFacetsRequest=false] - Skip facets request (query only)
+   * @param {boolean} [options.useRealPermissions=false] - Build the country auth filter from
+   *   the real, pre-simulation identity instead of the currently-simulated one, when
+   *   sudo-simulating. No effect when not simulating.
    * @returns {Promise<Object>} Merged ContentAI response
    */
   async searchAssets(query, options = {}) {
-    const { collectionId, skipFacetsRequest = false } = options;
+    const { collectionId, skipFacetsRequest = false, useRealPermissions = false } = options;
     const queryRequest = this.buildQueryRequest(query, options);
 
     // Determine search URL - use collection-specific endpoint if collectionId provided
     const searchUrl = collectionId
       ? `/adobe/assets/contentai/collections/${collectionId}/search`
       : '/adobe/assets/contentai/search';
+
+    // Worker-side flag (stripped before forwarding upstream): build the country
+    // auth filter from the real, pre-simulation identity rather than whatever is
+    // currently simulated. Used by the simulation country picker's own lookup.
+    if (useRealPermissions) {
+      queryRequest.useRealPermissions = true;
+    }
 
     // Build parallel requests
     const requests = [
@@ -877,6 +908,9 @@ export class DynamicMediaClient {
       // Scope request: all facets with scope from other selections
       const facetsScopeRequest = this.buildFacetsScopeRequest(query, options);
       if (facetsScopeRequest) {
+        if (useRealPermissions) {
+          facetsScopeRequest.useRealPermissions = true;
+        }
         requests.push(
           this.makeRequest({
             url: searchUrl,
@@ -889,6 +923,9 @@ export class DynamicMediaClient {
       // Include request: only selected facets with includes for exact counts
       const facetsIncludeRequest = this.buildFacetsIncludeRequest(query, options);
       if (facetsIncludeRequest) {
+        if (useRealPermissions) {
+          facetsIncludeRequest.useRealPermissions = true;
+        }
         requests.push(
           this.makeRequest({
             url: searchUrl,

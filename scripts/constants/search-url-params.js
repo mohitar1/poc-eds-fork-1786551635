@@ -8,6 +8,7 @@ export const SEARCH_URL_PARAMS = {
   FACET_FILTERS: 'facetFilters',
   NUMERIC_FILTERS: 'numericFilters',
   RIGHTS_FILTERS: 'rightsFilters',
+  SEARCH_MODE: 'searchMode',
 };
 
 /**

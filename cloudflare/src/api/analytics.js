@@ -4,6 +4,7 @@
  */
 
 import { error, json } from 'itty-router';
+import config from '../config.js';
 import { stripAssetUrn, TOP_ASSETS_LIMIT, TOP_CAMPAIGNS_LIMIT } from '../util/constants.js';
 
 // Analytics constants
@@ -261,7 +262,7 @@ async function getReportMetrics(request, env) {
       });
     }
 
-    const accountId = env.ANALYTICS_ACCOUNT_ID || 'd3259185ae56522248254092489d6755';
+    const accountId = config.ANALYTICS_ACCOUNT_ID;
     const apiToken = await env.ANALYTICS_API_TOKEN.get();
 
     // Build date range for the query
@@ -1698,7 +1699,7 @@ async function getRawDownloads(request, env) {
       });
     }
 
-    const accountId = env.ANALYTICS_ACCOUNT_ID || 'd3259185ae56522248254092489d6755';
+    const accountId = config.ANALYTICS_ACCOUNT_ID;
     const apiToken = await env.ANALYTICS_API_TOKEN.get();
 
     // Build date range for the query

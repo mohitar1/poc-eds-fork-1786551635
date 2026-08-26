@@ -17,7 +17,7 @@ export function getSessionCookie() {
     throw new Error(
       'TEST_SESSION_COOKIE is not set.\n'
       + 'For authz tests the cookie must be from a user with the "sudo" permission.\n'
-      + 'Get it from DevTools → Application → Cookies → session for spark.aem.media\n'
+      + 'Get it from DevTools → Application → Cookies → session for frescopamedia.com\n'
       + 'Then: export TEST_SESSION_COOKIE="<value>"',
     );
   }

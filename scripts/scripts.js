@@ -103,9 +103,16 @@ function showSudoBanner() {
       border: 3px solid ${color}; border-top: none;
       box-sizing: border-box; min-height: 100vh;
     }
-    body.sudo-active header .header-bar { top: ${bannerHeight}px; }
-    body.sudo-active header .nav-wrapper { top: calc(var(--header-bar-height) + ${bannerHeight}px); }
-    body.sudo-active header { height: calc(var(--nav-height) + ${bannerHeight}px); }
+    /* Push whichever fixed header bar is present (full nav or the minimal
+       welcome bar) down so it clears the banner, and offset main by the
+       same amount so page content stays below the fixed bar. Using a main
+       offset (rather than growing header height) keeps this correct even on
+       the welcome page, whose header carries an inline height style. */
+    body.sudo-active header .nav-wrapper,
+    body.sudo-active header .header-welcome-bar { top: ${bannerHeight}px; }
+    body.sudo-active header nav[aria-expanded='true'] .nav-sections {
+      top: calc(var(--nav-bar-height) + ${bannerHeight}px);
+    }
     body.sudo-active main { margin-top: ${bannerHeight}px; }
   `;
   document.head.appendChild(style);

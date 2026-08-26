@@ -29,7 +29,9 @@ repeating them:
   back a pasted token or secret value. Tell the customer where to put it
   themselves; read it only from the gitignored file at call time. If a
   secret appears in chat anyway, treat it as compromised — tell the
-  customer to rotate it and don't use it.
+  customer to rotate it and don't use it. When you tell them to rotate,
+  refer to it by name only ("that client secret") — **do not reproduce the
+  pasted value** in your reply, not even to quote what to revoke.
 - **I3 — Content is live on publish; code is live only on merge.**
   Document Authoring content takes effect immediately when published.
   Repo code (CSS tokens, SVG assets, JS) takes effect only once its
@@ -44,7 +46,11 @@ repeating them:
 
 ## Entry flow — run first, every invocation
 
-Do this before starting either phase:
+Do this **before starting either phase and before any tool, environment, or
+plugin availability check** (including the Phase A design-plugin gate below).
+The very first thing the customer sees is the entry question — never a
+readiness note, a blocker, or setup mechanics. Availability checks belong
+*inside* the phase they gate, reached only after routing (step 3).
 
 1. **Load state.** If `.internal/onboarding-state.json` exists, read it.
    Any phase it marks `done` is authoritative — never re-run it. Resume
@@ -185,18 +191,35 @@ locally. Not used by Phase A.
 
 # Phase A — Rebrand via Catalyst
 
+**Precondition — do not enter Phase A (including the excat check below)
+until the entry flow has run:** you must have already posed the entry
+question and recorded `intent` in the state file. If `intent` is still
+`null`, you are not in Phase A yet — go back and do the entry flow's step 2
+(pose the plain-language entry question) first, and stop there until the
+customer answers. The excat availability check is the *first thing inside*
+Phase A, not the first thing the customer sees.
+
 Rebrand the site's design/content to a new brand identity. The design/CSS
 migration is done by the **Catalyst (excat) design skill**, not by hand —
 design tokens, asset colors, content register rewrite, and publish all
 work independently of whether the fork's backend is set up yet. Do not
 defer this phase waiting on Phase B — it doesn't need it.
 
-**Required tool — check first, before A.1.** This phase drives the excat
-design skill **`excat-complete-design-expert`** (plugin `excat`, from the
-`excat-marketplace` shipped by the Adobe Experience Catalyst
+**Required tool — check on entering Phase A, before A.1** (i.e. only after
+the entry flow has run and routed here — never as the first thing the
+customer sees; see the entry flow's ordering rule). This phase drives the
+excat design skill **`excat-complete-design-expert`** (plugin `excat`, from
+the `excat-marketplace` shipped by the Adobe Experience Catalyst
 `aem-excat-plugin`). Don't assume it's missing and don't assume it's
 present — actually determine which of three states you're in, because
 "installed globally" and "enabled for this project" are different things:
+
+The plugin/enable mechanics below (skill names, `/plugin`, marketplace) are
+**operator-facing** setup, addressed to whoever runs this session — not
+customer-facing prose. That's the one place naming `excat`/the plugin is
+fine; I1 still forbids it in anything an end customer reads (e.g. the entry
+question, run-tier choices, completion reports). Never let this tooling
+handoff bleed into a customer-facing message.
 
 1. **Skill invokable now** — `excat-complete-design-expert` appears in
    this session's available-skills list. → Proceed; A.2 invokes it in
@@ -552,6 +575,24 @@ Per I2, don't take secret values in chat:
 2. Tell them exactly which two lines to add: `SPARK_DM_CLIENT_ID="..."`
    and `SPARK_DM_CLIENT_SECRET="..."`.
 3. Confirm they've done it — don't read the file's contents to "verify."
+
+**If the customer pastes a secret into chat anyway (I2):** tell them that
+value is now compromised and to rotate/regenerate it in the Adobe Developer
+Console, then put the *new* value into the gitignored **`cloudflare/.secrets`**
+file themselves (the same file and line — `SPARK_DM_CLIENT_SECRET="..."` — as
+the normal flow; name that file specifically, not a generic "secrets manager"
+or ".env"). When you say this, **do not repeat the pasted value back** — refer
+to it as "that client secret", never re-type the characters (re-typing it to
+say "revoke this" still exposes it in the transcript). Do not use the pasted
+value for anything. And do **not** offer to write the secret into `.secrets`
+*for* them — the customer always places secret values themselves; you only
+tell them the file and line. Offering to "drop it in for you" defeats I2.
+
+For local dev these go in the **`cloudflare/.secrets` file** — do **not**
+reach for `wrangler secret put` / a remote secrets store here. That's a
+deploy-time mechanism (the deploy stage's D-steps), needs the customer's
+Cloudflare account, and does nothing for `wrangler dev`, which reads
+`.secrets` locally.
 
 The `cloudflare/.secrets` file must **exist** or `wrangler dev` won't
 even boot (its `predev` hook hard-fails on a missing file) — so this

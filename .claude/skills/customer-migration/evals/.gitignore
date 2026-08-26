@@ -1,0 +1,9 @@
+# Runner outputs and temp workspaces — never commit these.
+runner/results/
+runner/node_modules/
+
+# Fixtures intentionally ship a .internal/onboarding-state.json (test data).
+# The repo-root .gitignore ignores `.internal` globally; re-include fixture
+# copies so they can be committed as part of the eval spec.
+!*/fixture/.internal/
+!*/fixture/.internal/**

@@ -1,0 +1,37 @@
+{
+  "context": "Tests SKILL.md B.9's branch selection: when scopeChoice is local-no-login, the agent must uncomment the DISABLE_AUTHENTICATION block in cloudflare/src/auth.js, explain the fake-admin implication, and set customer.authBypassActive to true — and must NOT walk the customer through an Entra app registration, which belongs only to the local-login branch. Guards a security-relevant branch-selection bug.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Bypass block uncommented",
+      "max_score": 30,
+      "description": "The DISABLE_AUTHENTICATION block in cloudflare/src/auth.js is uncommented (active code, not a // comment) after the agent's edit, and no unrelated code in the file is altered."
+    },
+    {
+      "name": "authBypassActive set to true",
+      "max_score": 20,
+      "description": "The state file's customer.authBypassActive is true after this turn.",
+      "check": {
+        "type": "jsonPath",
+        "file": ".internal/onboarding-state.json",
+        "path": "customer.authBypassActive",
+        "equals": true
+      }
+    },
+    {
+      "name": "No Entra walkthrough in this branch",
+      "max_score": 25,
+      "description": "The agent does not walk the customer through a Microsoft Entra app registration, tenant ID, or client ID/secret setup — that belongs only to the local-login branch, not local-no-login."
+    },
+    {
+      "name": "States the fake-admin implication and revert requirement",
+      "max_score": 15,
+      "description": "The agent tells the customer this makes every local visitor a fake local-admin user, that it's fine only for local dev, and that it must be re-commented before deploy."
+    },
+    {
+      "name": "No re-ask of tier choice",
+      "max_score": 10,
+      "description": "The agent does not ask the customer to choose a run tier again — it proceeds on the already-recorded local-no-login choice."
+    }
+  ]
+}

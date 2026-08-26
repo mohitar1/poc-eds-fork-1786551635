@@ -19,8 +19,8 @@ Each language has its own URL path prefix:
 
 | Language | Example URL |
 |----------|-------------|
-| English | `spark.aem.media/en/help/faq` |
-| Japanese | `spark.aem.media/ja/help/faq` |
+| English | `frescopamedia.com/en/help/faq` |
+| Japanese | `frescopamedia.com/ja/help/faq` |
 
 ### Content Structure
 

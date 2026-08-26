@@ -41,10 +41,9 @@ Spark is a digital asset management platform built on:
 
 | Environment | URL |
 |-------------|-----|
-| Production | `https://spark-eds.workers.dev` |
-| Preview | `https://preview-spark-eds.workers.dev` |
-| Branch (preview) | `https://{branch}-spark-eds.workers.dev` |
-| Branch (live) | `https://{branch}-live-spark-eds.workers.dev` |
+| Production | `https://frescopamedia.com` |
+| Preview | `https://preview.frescopamedia.com` |
+| Branch | `https://{branch}.dev.frescopamedia.com` |
 | Local Development | `http://localhost:8787` |
 
 ---
@@ -515,7 +514,7 @@ See `spark-api-collection-curl.sh` for executable examples:
 
 ```bash
 # Set environment variables
-export BASE_URL="https://spark-eds.workers.dev"
+export BASE_URL="https://frescopamedia.com"
 export SESSION_COOKIE="your_session_cookie_value"
 
 # Source the file for helper functions

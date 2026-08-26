@@ -15,7 +15,7 @@
 .asset-preview-modal-inner {
     padding: 32px;
     background: white;
-    border-radius: 20px;
+    border-radius: 12px;
     max-width: 35%;
     max-height: 80vh;
     overflow: hidden auto;

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "installed": {
+    "excat@excat-marketplace": {
+      "version": "2.1.6",
+      "scope": "user",
+      "source": "excat-marketplace",
+      "enabledProjects": []
+    }
+  }
+}
