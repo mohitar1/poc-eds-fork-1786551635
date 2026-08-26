@@ -141,7 +141,7 @@ function isBrandContent(node) {
   if (node.nodeType !== Node.ELEMENT_NODE) return false;
   if (node.tagName === 'UL') return false;
   return Boolean(
-    node.querySelector?.('.icon-santander-icon')
+    node.querySelector?.('.icon-urbn-icon')
     || node.querySelector?.('a[href] .icon'),
   );
 }
@@ -593,8 +593,8 @@ export default async function decorate(block) {
     welcomeBar.className = 'header-welcome-bar';
     welcomeBar.innerHTML = `
       <a href="/" class="welcome-logo" aria-label="Home">
-        <span class="icon icon-santander-icon">
-          <img src="/icons/santander-icon.svg" alt="Santander" loading="eager" />
+        <span class="icon icon-urbn-icon">
+          <img src="/icons/urbn-icon.svg" alt="URBN" loading="eager" />
         </span>
       </a>`;
     block.append(welcomeBar);
