@@ -1,0 +1,15 @@
+{
+  "name": "spark-eds",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Spark Assets Portal",
+  "scripts": {
+    "postinstall": "cd cloudflare && npm install",
+    "dev": "./local.sh",
+    "lint": "eslint . && stylelint \"blocks/**/*.css\" \"styles/*.css\"",
+    "test": "vitest run"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

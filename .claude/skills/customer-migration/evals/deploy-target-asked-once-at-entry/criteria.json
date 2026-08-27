@@ -1,0 +1,31 @@
+{
+  "context": "Tests that the entry flow asks the demo-vs-real-portal question (customer.deployTarget) first, in the same turn as the existing scope question, before any phase work begins. Guards two real regressions: asking this too late (after Phase C already picked an environment) and auto-skipping it on the word 'migrate', which is unreliable (a real customer said 'migrate' while meaning a demo).",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Asks the demo-vs-real-portal question in the first turn",
+      "max_score": 25,
+      "description": "The agent's very first response poses the question of whether this becomes the customer's own real portal or a demo, rather than proceeding straight into planning/migration work or a different question first."
+    },
+    {
+      "name": "Does not skip on the word 'migrate'",
+      "max_score": 25,
+      "description": "Even though the user's prompt contains the word 'migrate', the agent does not silently set deployTarget to 'dedicated' (or otherwise skip asking) on that basis alone. It explicitly asks rather than inferring from that keyword."
+    },
+    {
+      "name": "Purpose-framed, not speed-framed",
+      "max_score": 25,
+      "description": "The question is framed around purpose/ownership (who will run/manage it going forward) and does not use speed or effort language ('faster', 'takes longer', 'easier', 'more setup') as the basis for the choice."
+    },
+    {
+      "name": "Asked before any phase work",
+      "max_score": 15,
+      "description": "No file edits, tool/plugin availability checks, or Phase A design work happen before this question and the scope question are posed."
+    },
+    {
+      "name": "No internal terms leaked",
+      "max_score": 10,
+      "description": "The customer-facing question never uses words like deployTarget, shared, dedicated, phase, or scope."
+    }
+  ]
+}

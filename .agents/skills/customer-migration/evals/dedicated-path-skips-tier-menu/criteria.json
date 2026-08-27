@@ -1,0 +1,26 @@
+{
+  "context": "Tests that B.5 branches on customer.deployTarget == 'dedicated' upfront and skips the three-way tier menu, setting scopeChoice to the no-login local tier directly rather than asking the customer to choose. A real migration only ever uses the no-login local tier; real sign-in setup is deferred to deploy time, not offered as a local-run choice.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Does not present the three-way tier menu",
+      "max_score": 30,
+      "description": "The agent does not offer or describe the preview / local-no-login / local-login choice, or ask the customer to pick a tier."
+    },
+    {
+      "name": "Does not set up real sign-in at this stage",
+      "max_score": 25,
+      "description": "The agent does not offer or begin real Microsoft/Entra sign-in setup as part of the local run - it recognizes this is deferred to deploy time."
+    },
+    {
+      "name": "Resolves directly to the no-login local tier",
+      "max_score": 25,
+      "description": "The agent sets or clearly states it is setting scopeChoice to the no-login local tier directly, without treating it as an open customer choice, and proceeds to Content Hub credential collection as the next step."
+    },
+    {
+      "name": "Plain language, no internal terms",
+      "max_score": 20,
+      "description": "No internal step ids, or the words shared/dedicated/deployTarget/scopeChoice/local-no-login, are shown to the customer."
+    }
+  ]
+}

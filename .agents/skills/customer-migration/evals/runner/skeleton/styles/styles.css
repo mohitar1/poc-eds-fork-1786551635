@@ -1,0 +1,13 @@
+:root {
+  --background-color: #fff;
+  --text-color: #131313;
+  --link-color: #3b63fb;
+  --body-font-family: roboto, roboto-fallback, sans-serif;
+  --heading-font-family: var(--body-font-family);
+}
+
+body {
+  font-family: var(--body-font-family);
+  color: var(--text-color);
+  background: var(--background-color);
+}

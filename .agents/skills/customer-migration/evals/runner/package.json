@@ -1,0 +1,17 @@
+{
+  "name": "customer-migration-evals-runner",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local runner for the customer-migration skill evals. Drives the `claude` CLI headlessly and judges each run against its criteria.json.",
+  "bin": {
+    "run-eval": "./run.mjs"
+  },
+  "scripts": {
+    "run": "node run.mjs",
+    "compare": "node compare.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

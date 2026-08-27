@@ -1,0 +1,45 @@
+{
+  "templates": [
+    {
+      "name": "age-gate-interstitial",
+      "representativePages": [
+        "https://www.heineken.com/in/en/"
+      ],
+      "urls": [
+        "https://www.heineken.com/in/en/",
+        "https://www.heineken.com/in/en/agegateway/",
+        "https://www.heineken.com/in/en/campaigns/",
+        "https://www.heineken.com/in/en/campaigns/first-sip/",
+        "https://www.heineken.com/in/en/campaigns/heineken-0-0/",
+        "https://www.heineken.com/in/en/contact-us/",
+        "https://www.heineken.com/in/en/cookie-policy/",
+        "https://www.heineken.com/in/en/enjoy-responsibly/",
+        "https://www.heineken.com/in/en/enjoy-responsibly/responsible-practical-tips/",
+        "https://www.heineken.com/in/en/f1wish/",
+        "https://www.heineken.com/in/en/faq/",
+        "https://www.heineken.com/in/en/heinekenpuremalt/",
+        "https://www.heineken.com/in/en/history/",
+        "https://www.heineken.com/in/en/home/",
+        "https://www.heineken.com/in/en/notifications/",
+        "https://www.heineken.com/in/en/notifications/refuting-dog-fighting-rumours/",
+        "https://www.heineken.com/in/en/our-products/",
+        "https://www.heineken.com/in/en/our-products/draught-beer/",
+        "https://www.heineken.com/in/en/our-products/heineken-0-0/",
+        "https://www.heineken.com/in/en/our-products/heineken-original/",
+        "https://www.heineken.com/in/en/our-products/heineken-silver/",
+        "https://www.heineken.com/in/en/our-products/the-can/",
+        "https://www.heineken.com/in/en/our-story/",
+        "https://www.heineken.com/in/en/our-story/brewing/",
+        "https://www.heineken.com/in/en/our-story/the-experience/",
+        "https://www.heineken.com/in/en/privacy-policy/",
+        "https://www.heineken.com/in/en/sponsorships/",
+        "https://www.heineken.com/in/en/sponsorships/formula-1/",
+        "https://www.heineken.com/in/en/sponsorships/formula-e/",
+        "https://www.heineken.com/in/en/terms-of-use/",
+        "https://www.heineken.com/in/en/toastofindia/",
+        "https://www.heineken.com/in/en/ucl2025/"
+      ],
+      "description": "Age verification gate blocking all page content - centered logo, country selector, DOB form, single CTA button. Not real page content; every crawled URL returned this same interstitial instead of the underlying page."
+    }
+  ]
+}

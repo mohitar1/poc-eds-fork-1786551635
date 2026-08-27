@@ -48,6 +48,8 @@ function toCsvRow(asset, fields, scope) {
     brand: fields.brand,
     company: scope.company,
     status: scope.status,
+    allowedCountries: scope.allowedCountries,
+    internalStatus: scope.internalStatus,
   };
 }
 
@@ -89,7 +91,17 @@ export async function enrichAssets({
 }) {
   const report = new Report();
   const { customerKey } = options;
-  const scope = { company: customerKey, status: STATUS_APPROVED };
+  // allowedCountries/internalStatus are authz-governed scope fields (plan §2.8) —
+  // always stamped by the controller, never left to the model. Defaulting to
+  // ['global'] here keeps this path in parity with enrich-classic.js's scope so an
+  // asset enriched via the bulk-CSV/PATCH path is never silently invisible to every
+  // market.
+  const scope = {
+    company: customerKey,
+    status: STATUS_APPROVED,
+    allowedCountries: ['global'],
+    internalStatus: STATUS_APPROVED,
+  };
   const folderPath = options.damPath || `/content/dam/${customerKey}`;
 
   log.info?.(`[agent] enrich customer=${customerKey} folder=${folderPath} dryRun=${options.dryRun}`);

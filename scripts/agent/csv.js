@@ -21,6 +21,8 @@ const COLUMN_REGISTRY = [
   { key: 'brand', header: `${FIELD.BRAND}[string]` },
   { key: 'company', header: `${FIELD.COMPANY}[string]` },
   { key: 'status', header: `${FIELD.STATUS}[string]` },
+  { key: 'allowedCountries', header: `${FIELD.ALLOWED_COUNTRIES}[string[]]`, array: true },
+  { key: 'internalStatus', header: `${FIELD.INTERNAL_STATUS}[string]` },
 ];
 
 /**

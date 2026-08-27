@@ -1,0 +1,26 @@
+{
+  "context": "Tests SKILL.md B.5's honest-limits requirement: when offering the three local-run tiers, the agent must state at choice time that notifications, reports/asset-activity dashboards, and search/analytics reports do not work locally for the no-login/login tiers, and must not oversell any option as full production parity.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Three options presented in plain language",
+      "max_score": 20,
+      "description": "The agent presents three distinct local-run options in outcome language (I1) — no scopeChoice enum values (preview/local-no-login/local-login) shown verbatim as labels, no internal step/phase names."
+    },
+    {
+      "name": "Limits stated for the working tiers",
+      "max_score": 35,
+      "description": "For at least the 'get it actually working, skip sign-in' option, the agent explicitly names things that do NOT work locally — at least two of: notifications/the bell, reports/asset-activity dashboards, search/analytics reports."
+    },
+    {
+      "name": "No overselling",
+      "max_score": 25,
+      "description": "No option is described as giving full production parity or 'everything works' — the caveats are present rather than omitted or glossed over."
+    },
+    {
+      "name": "Stops and waits for the answer",
+      "max_score": 20,
+      "description": "The agent presents the choice and stops — it does not proceed to apply a tier, collect credentials, or edit auth.js in this same turn before the customer has answered."
+    }
+  ]
+}
