@@ -14,6 +14,7 @@ secret.env
 .secrets
 .wrangler/
 token.env
+*.swp
 
 # Generated configuration files with sensitive data
 react/dist/config.js

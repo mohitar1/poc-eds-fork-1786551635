@@ -11,17 +11,17 @@
  */
 
 :root {
-  /* Brand palette (semantic tokens — single source of truth) */
+  /* Brand palette (semantic tokens — single source of truth) — Disney */
   --light-color: #F2F4F7;
   --dark-color: #191919;
   --text-color: #191919;
   --text-primary: #191919;
-  --link-color: #0879BE;
-  --link-hover-color: #4A4A4A;
-  --primary-color: #0879BE;
-  --primary-color-hover: #065E93;
-  --color-red: #0879BE;
-  --color-dark-red: #065E93;
+  --link-color: #2A60B3;
+  --link-hover-color: #143C82;
+  --primary-color: #2A60B3;
+  --primary-color-hover: #143C82;
+  --color-red: #E4002B;
+  --color-dark-red: #B4001F;
   --accent-secondary: #4A4A4A;
   --accent-tertiary: #FFCC00;
   --secondary-color: #191919;
@@ -66,8 +66,8 @@
   --color-dark-blue: var(--primary-color);
 
   /* fonts */
-  --body-font-family: inter, inter-fallback, sans-serif;
-  --heading-font-family: inter, inter-fallback, sans-serif;
+  --body-font-family: 'Noto Sans', noto-sans-fallback, sans-serif;
+  --heading-font-family: 'Noto Sans', noto-sans-fallback, sans-serif;
 
   /* font sizes */
   --body-font-size-m: 18px;
@@ -116,7 +116,7 @@
 
   /* action button colors */
   --button-primary: var(--primary-color);
-  --button-primary-hover: #065E93;
+  --button-primary-hover: #143C82;
 
   /* label colors */
   --label-color: var(--text-color);
@@ -153,8 +153,8 @@
 }
 
 @font-face {
-  font-family: inter-fallback;
-  size-adjust: 107%;
+  font-family: noto-sans-fallback;
+  size-adjust: 100%;
   src: local('Arial');
 }
 
@@ -224,19 +224,19 @@ body:has(.section.welcome) > main {
 }
 
 /* Brand mark (its own paragraph) */
-.section.welcome p:has(.icon-urbn-mark) {
+.section.welcome p:has(.icon-disney-mark) {
   margin: 0 0 var(--spacing-small);
   max-width: none;
 }
 
-.section.welcome .icon-urbn-mark {
+.section.welcome .icon-disney-mark {
   display: inline-flex;
   width: 64px;
   height: 64px;
 }
 
-.section.welcome .icon-urbn-mark img,
-.section.welcome .icon-urbn-mark svg {
+.section.welcome .icon-disney-mark img,
+.section.welcome .icon-disney-mark svg {
   width: 64px;
   height: 64px;
 }
