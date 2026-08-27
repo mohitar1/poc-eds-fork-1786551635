@@ -113,7 +113,9 @@ export async function enrichAssetsClassic({
 }) {
   const report = new Report();
   const { customerKey } = options;
-  const scope = { company: customerKey, status: STATUS_APPROVED, allowedCountries: 'global', internalStatus: 'approved' };
+  const scope = {
+    company: customerKey, status: STATUS_APPROVED, allowedCountries: 'global', internalStatus: 'approved',
+  };
   const folderPath = options.damPath || `/content/dam/${customerKey}`;
 
   // Select upload strategy: repository (preferred when apiKey present), classic (fallback).

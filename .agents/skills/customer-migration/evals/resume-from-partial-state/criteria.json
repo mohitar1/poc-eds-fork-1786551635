@@ -1,0 +1,36 @@
+{
+  "context": "Tests the entry flow's resume logic (SKILL.md step 1): a done phase is authoritative and never re-run, and a phase in progress resumes at its first non-done step without re-asking questions already answered under customer. Guards against resumability silently breaking after an edit to entry-flow or Phase B ordering.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "No repeat of the entry question",
+      "max_score": 20,
+      "description": "The agent does not ask again whether the customer wants a new look / rebrand, and does not treat intent as unresolved. It proceeds on the basis that intent is already backend-only."
+    },
+    {
+      "name": "No re-ask of fork org/repo",
+      "max_score": 15,
+      "description": "The agent does not ask the customer for their GitHub org/repo — it uses the values already present in customer.githubOrg/githubRepo (or silently relies on them) rather than prompting for them again."
+    },
+    {
+      "name": "No re-ask of Content Hub credentials",
+      "max_score": 20,
+      "description": "The agent does not ask the customer to provide the Content Hub client id/secret again or tell them to create cloudflare/.secrets again — content-hub-creds-collected is already done and the file already exists."
+    },
+    {
+      "name": "No re-ask of tier choice",
+      "max_score": 15,
+      "description": "The agent does not re-present the three run-tier options or ask which one the customer wants — scopeChoice is already local-no-login and tier-selected is done."
+    },
+    {
+      "name": "Resumes at the correct next step",
+      "max_score": 20,
+      "description": "The agent's action moves to the actual next pending step — applying the local-no-login auth-bypass edit (uncommenting the DISABLE_AUTHENTICATION block in cloudflare/src/auth.js) and/or boot verification — not an earlier or unrelated step."
+    },
+    {
+      "name": "Plain language",
+      "max_score": 10,
+      "description": "No internal step ids, phase names, or file-internal jargon shown to the customer (I1)."
+    }
+  ]
+}

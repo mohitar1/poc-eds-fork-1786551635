@@ -1,0 +1,31 @@
+{
+  "context": "Tests that real Microsoft/Entra sign-in setup for a dedicated customer happens as a distinct deploy-stage step (deploy.md D.6.5), right before merge, not during the local run and not skipped when going live.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Recognizes real sign-in setup is needed now",
+      "max_score": 30,
+      "description": "The agent identifies that going live requires setting up real Entra sign-in, and does not treat it as already done or skip it."
+    },
+    {
+      "name": "Walks through actual Entra app registration steps",
+      "max_score": 30,
+      "description": "The agent guides the customer through registering their own Entra app and placing the tenant/client id into wrangler.toml vars and the client secret into the Secrets Store/.secrets."
+    },
+    {
+      "name": "Confirms auth bypass is not left on for production",
+      "max_score": 20,
+      "description": "The agent confirms DISABLE_AUTHENTICATION is not enabled for production before proceeding to merge/deploy."
+    },
+    {
+      "name": "Does not conflate with local-run auth bypass",
+      "max_score": 10,
+      "description": "The agent does not suggest this should have been set up during the local run, and does not imply the local no-login bypass is equivalent to real production auth."
+    },
+    {
+      "name": "Plain language, no internal terms",
+      "max_score": 10,
+      "description": "No internal step ids, or the words shared/dedicated/deployTarget/scopeChoice, are shown to the customer."
+    }
+  ]
+}

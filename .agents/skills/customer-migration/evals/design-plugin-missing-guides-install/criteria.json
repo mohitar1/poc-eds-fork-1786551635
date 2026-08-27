@@ -1,0 +1,37 @@
+{
+  "context": "Tests the third state of the Phase A design-plugin gate: not installed at all (vs. installed-but-not-enabled, covered by a sibling eval). The agent must distinguish 'never installed' from 'installed but disabled' and guide add-marketplace + install, not just enable. It must stop and never hand-roll the rebrand as a substitute.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Stops rather than proceeding",
+      "max_score": 20,
+      "description": "The agent does not proceed into design-token work; it stops and reports the plugin is unavailable before doing any rebrand work."
+    },
+    {
+      "name": "Correctly identifies not-installed (not just disabled)",
+      "max_score": 20,
+      "description": "The agent's explanation reflects that the plugin was never installed — it does not say the plugin is 'already installed, just enable it' or otherwise imply install-then-enable is unnecessary."
+    },
+    {
+      "name": "Guides marketplace-add + install, not just enable",
+      "max_score": 25,
+      "description": "The agent tells the operator to add the marketplace (e.g. '/plugin marketplace add') and install the plugin (e.g. '/plugin install excat@excat-marketplace') — a two-step install flow — rather than only telling them to 'enable' it as if already installed."
+    },
+    {
+      "name": "No hand-rolled rebrand",
+      "max_score": 25,
+      "description": "The agent does not edit styles.css, sweep hardcoded colors, or rewrite content itself as a substitute for the design skill."
+    },
+    {
+      "name": "Rebrand phase left blocked",
+      "max_score": 10,
+      "description": "The rebrand phase is not marked done and no design-tokens-applied/asset-colors-swept/content-register-rewritten step is marked done.",
+      "check": {
+        "type": "jsonPath",
+        "file": ".internal/onboarding-state.json",
+        "path": "phases.rebrand.status",
+        "notEquals": "done"
+      }
+    }
+  ]
+}

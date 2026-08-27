@@ -1,0 +1,36 @@
+{
+  "context": "Tests invariant I1 (outcomes only, never internal terms) at the entry flow. Given an ambiguous first request, the skill must ask a single plain-language entry question and phrase the question header, any rendered option labels/chips, and surrounding prose in outcome language a non-technical customer understands — never leaking the skill's internal vocabulary (rebrand, scope, phase, tier, onboarding, frontend, backend), a scopeChoice enum value, a step/skill name, or 'the skill says'. Guards a real regression where a picker showed 'Rebrand scope' / 'Rebrand only'.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Entry question posed",
+      "max_score": 10,
+      "description": "The agent asks the customer a single question to resolve what they want (a new look vs. already done / just run it), rather than silently assuming or jumping straight into work. The question text is shown in the transcript."
+    },
+    {
+      "name": "Question header/lead-in has no internal term",
+      "max_score": 20,
+      "description": "The question's header, title, or lead-in sentence contains none of these words: rebrand, scope, phase, tier, onboarding, frontend, backend."
+    },
+    {
+      "name": "Option labels have no internal term or enum",
+      "max_score": 25,
+      "description": "If choices/options/chips are presented, no label contains one of these exact banned words — rebrand, scope, phase, tier, onboarding, frontend, backend — nor a scopeChoice enum value (preview, local-no-login, local-login). Judge ONLY on the presence of those specific words. Ordinary English words like 'only', 'new look', 'already updated', 'refresh', 'design', 'content' are fine and must not be penalized. E.g. 'New look only' PASSES (no banned word); 'Rebrand only' FAILS (contains 'rebrand')."
+    },
+    {
+      "name": "Surrounding prose clean",
+      "max_score": 20,
+      "description": "The prose the customer sees does not use a banned internal term and does not say 'the skill says' or expose the skill/file/step names."
+    },
+    {
+      "name": "Options are outcome-worded",
+      "max_score": 15,
+      "description": "The question/options describe outcomes in plain words (e.g. 'give the site a fresh look', 'update the content', 'get it running for you', 'already updated — just get it running') rather than internal categories."
+    },
+    {
+      "name": "Question posed before any readiness/blocker",
+      "max_score": 10,
+      "description": "The entry question is the response — the agent does NOT front-load an environment/tool/plugin availability check or a blocker/readiness note before (or instead of) posing it. No 'the design plugin isn't enabled' / 'I can't proceed' style content precedes the question."
+    }
+  ]
+}

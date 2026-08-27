@@ -1,0 +1,36 @@
+{
+  "context": "Tests that deploy.md correctly branches on customer.deployTarget == 'shared': skips D.2-D.5 (new Cloudflare account intake, repo identity rename, new secrets store push, new remote D1 migration) entirely since nothing new is being provisioned, while D.1 (bypass gate) still applies unconditionally. Guards against defaulting to full new-customer provisioning for a demo reusing shared infrastructure, and against skipping the security-critical bypass gate.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "D.1 bypass gate still applies",
+      "max_score": 20,
+      "description": "The agent re-comments the DISABLE_AUTHENTICATION block in cloudflare/src/auth.js and sets authBypassActive to false before anything else, regardless of the shared path - this step is never skipped."
+    },
+    {
+      "name": "No Cloudflare intake file / new resource lookups",
+      "max_score": 25,
+      "description": "The agent does not generate .internal/customer-config.json or ask the customer to look up a new Cloudflare account id, workers.dev subdomain, KV namespace id, or new D1 database ids."
+    },
+    {
+      "name": "No repo identity rename to new ids",
+      "max_score": 15,
+      "description": "The agent does not perform or ask for a rename of wrangler.toml/wrangler.jsonc identifiers to new customer-specific resource ids."
+    },
+    {
+      "name": "No new secrets-store push or D1 migration",
+      "max_score": 15,
+      "description": "The agent does not ask the customer to run wrangler secrets-store commands against a new store, or migrate schema into new remote D1 databases."
+    },
+    {
+      "name": "Correctly identifies the one real remaining action",
+      "max_score": 15,
+      "description": "The agent's next concrete action is checking/copying the existing shared CLOUDFLARE_API_TOKEN into this fork's own GitHub repo secrets (framed as reusing an existing value, not creating a new one), then proceeding toward merge."
+    },
+    {
+      "name": "No internal terms leaked",
+      "max_score": 10,
+      "description": "The customer-facing text never uses the words deployTarget, shared, or dedicated as jargon labels."
+    }
+  ]
+}

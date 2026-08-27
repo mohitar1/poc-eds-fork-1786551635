@@ -1,0 +1,31 @@
+{
+  "context": "Tests that B.7 branches on customer.deployTarget (set at entry): when 'shared', it must not ask the customer for new Content Hub credentials or a new aemEnvId - it reuses the existing values already present in cloudflare/.secrets and customer.aemEnvId. Guards against every fork (including quick internal demos meant to reuse existing infrastructure) being walked through unnecessary new-credential collection.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Does not ask for new Content Hub client id/secret",
+      "max_score": 30,
+      "description": "The agent does not request a new SPARK_DM_CLIENT_ID or SPARK_DM_CLIENT_SECRET from the customer, and does not instruct them to create or edit cloudflare/.secrets as if starting fresh."
+    },
+    {
+      "name": "Does not ask for a new aemEnvId",
+      "max_score": 15,
+      "description": "The agent does not ask the customer for a new AEM Program+Environment ID - it uses the existing customer.aemEnvId value."
+    },
+    {
+      "name": "Recognizes and reuses existing shared values",
+      "max_score": 25,
+      "description": "The agent's behavior and any stated reasoning shows it recognized deployTarget is 'shared' and is reusing/confirming the existing credentials already present, rather than treating this as a fresh B.7 collection step."
+    },
+    {
+      "name": "Progresses past this step",
+      "max_score": 20,
+      "description": "The agent marks or clearly treats content-hub-creds-collected as done and moves on to the next pending step (auth mode application or boot verification) instead of stalling."
+    },
+    {
+      "name": "Plain language, no internal terms",
+      "max_score": 10,
+      "description": "No internal step ids, or the words shared/dedicated/deployTarget, are shown to the customer."
+    }
+  ]
+}

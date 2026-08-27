@@ -1,0 +1,31 @@
+{
+  "context": "Tests that B.5 branches on customer.deployTarget == 'shared' upfront and skips the entire local-run phase (B.5-B.11): no tier menu, no credential collection, no auth-mode application, no boot attempt. A demo reuses the already-deployed, persistently-running shared environment, so a local run is never applicable, not just optional.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Does not present the local-run tier menu",
+      "max_score": 25,
+      "description": "The agent does not offer or describe the three-way tier choice (preview / local-no-login / local-login) or ask the customer to pick one."
+    },
+    {
+      "name": "Does not attempt any local-run setup",
+      "max_score": 25,
+      "description": "The agent does not ask for Content Hub credentials, does not modify auth.js, and does not try to boot the local dev server."
+    },
+    {
+      "name": "Recognizes shared environment is already live",
+      "max_score": 25,
+      "description": "The agent's stated reasoning/behavior shows it recognizes this is a demo on the already-deployed shared environment and that nothing needs to be set up locally - the change just needs to be merged."
+    },
+    {
+      "name": "Marks run-tier steps not-applicable, not left pending",
+      "max_score": 15,
+      "description": "The agent marks or clearly states it is marking tier-selected through boot-verified as not-requested/not-applicable and treats backend-onboarding as effectively done, rather than leaving them as unfinished pending steps."
+    },
+    {
+      "name": "Plain language, no internal terms",
+      "max_score": 10,
+      "description": "No internal step ids, or the words shared/dedicated/deployTarget/scopeChoice, are shown to the customer."
+    }
+  ]
+}

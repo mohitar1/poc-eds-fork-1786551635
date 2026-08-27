@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "intent": "full",
+  "customer": {
+    "name": "Disney",
+    "githubOrg": "operator1",
+    "githubRepo": "poc-eds-fork-disney",
+    "aemEnvId": null,
+    "authBypassActive": null,
+    "deployTarget": "dedicated"
+  },
+  "phases": {
+    "rebrand": {
+      "status": "done",
+      "lastUpdated": "2026-08-27",
+      "steps": {
+        "brand-inputs-collected": "done",
+        "permissions-checked": "done",
+        "design-tokens-applied": "done",
+        "asset-colors-swept": "done",
+        "content-register-rewritten": "done",
+        "published": "done",
+        "landed-via-pr": "done",
+        "asset-color-sweep-verified": "done"
+      }
+    },
+    "backend-onboarding": {
+      "status": "in_progress",
+      "lastUpdated": "2026-08-27",
+      "scopeChoice": null,
+      "steps": {
+        "node-version-check": "pending",
+        "fork-identity-resolved": "pending",
+        "code-sync-verified": "pending",
+        "helix-url-and-readme-corrected": "pending",
+        "tier-selected": "pending",
+        "content-hub-creds-collected": "pending",
+        "auth-mode-applied": "pending",
+        "boot-verified": "pending",
+        "deploy-bypass-gated": "pending",
+        "intake-file-generated": "pending",
+        "repo-identity-rename-applied": "pending",
+        "remote-secrets-pushed": "pending",
+        "remote-d1-migrated": "pending",
+        "ci-token-set": "pending",
+        "real-auth-configured": "pending",
+        "deployed-via-merge": "pending"
+      }
+    },
+    "asset-population": {
+      "status": "in_progress",
+      "lastUpdated": null,
+      "lane": null,
+      "customerKey": null,
+      "assetSourceUrl": null,
+      "steps": {
+        "customer-key-resolved": "pending",
+        "author-access-verified": "pending",
+        "assets-resolved": "pending",
+        "metadata-generated": "pending",
+        "metadata-written": "pending",
+        "assets-published": "pending",
+        "scope-config-written": "pending",
+        "scope-applied-locally": "pending",
+        "search-scope-verified": "pending",
+        "scope-deployed": "not-requested"
+      }
+    }
+  }
+}

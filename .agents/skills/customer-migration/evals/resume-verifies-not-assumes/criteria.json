@@ -1,0 +1,31 @@
+{
+  "context": "Tests that the entry flow's resume path spot-checks real repo state instead of blindly trusting a 'done' status in onboarding-state.json. Fixture has rebrand marked fully done in the state file, but the actual styles.css still shows unmodified template default brand tokens - a direct contradiction. Guards against building subsequent phases on top of a stale/wrong state record.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Does not blindly proceed on the stale 'done' claim",
+      "max_score": 30,
+      "description": "The agent does not silently jump into backend-onboarding work while treating rebrand as genuinely finished purely because the state file says so."
+    },
+    {
+      "name": "Performs a concrete verification",
+      "max_score": 30,
+      "description": "The agent looks at (or clearly states it is checking) real repo content relevant to the done claim, such as blocks/theme/styles.css or design tokens, rather than only reading the state file."
+    },
+    {
+      "name": "Surfaces the contradiction to the customer",
+      "max_score": 25,
+      "description": "The agent tells the customer in plain language that the site doesn't actually appear rebranded yet despite the prior record, rather than silently trusting the record or silently redoing work without explanation."
+    },
+    {
+      "name": "Proposes a sensible next step",
+      "max_score": 10,
+      "description": "The agent suggests a clear way forward (e.g. confirming whether to resume/redo the rebrand) rather than stalling or guessing without surfacing the issue."
+    },
+    {
+      "name": "No internal terms leaked",
+      "max_score": 5,
+      "description": "State file field names, phase names, or step ids are not shown to the customer."
+    }
+  ]
+}

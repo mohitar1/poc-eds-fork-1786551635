@@ -53,6 +53,9 @@ describe('enrichAssets controller', () => {
     expect(out.dryRun).toBe(true);
     expect(out.report.counts().enriched).toBe(1);
     expect(out.csvPreview).toContain('dc:title[string]');
+    expect(out.csvPreview).toContain('allowedCountries[string[]]');
+    expect(out.csvPreview).toContain('internalStatus[string]');
+    expect(out.csvPreview).toContain('"[""global""]"');
     // Only enumerate + read happened — no write/publish calls.
     expect(client.calls.map((c) => c.op)).toEqual(['search', 'metadata']);
   });

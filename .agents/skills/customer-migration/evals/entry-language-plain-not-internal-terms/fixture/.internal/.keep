@@ -1,0 +1,2 @@
+This eval starts with no onboarding-state.json (first invocation). This .keep
+file just ensures the .internal directory exists in the seeded workspace.

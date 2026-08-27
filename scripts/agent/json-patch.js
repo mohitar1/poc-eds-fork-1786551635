@@ -1,7 +1,9 @@
 /**
  * Build an RFC-6902 JSON Patch for the per-asset PATCH /assets/{id}/metadata path
- * (plan §2.9). repositoryMetadata is read-only and must never be included. `company`
- * and `dam:status` are always added by the controller (not the model).
+ * (plan §2.9). repositoryMetadata is read-only and must never be included. `company`,
+ * `dam:status`, `allowedCountries`, and `internalStatus` are always added by the
+ * controller (not the model) — the last two are authz-governed scope fields, never
+ * model-inferred (plan §2.8).
  *
  * JSON Pointer note: our metadata keys (dc:title, dam:status, …) contain no `/` or `~`,
  * so no pointer escaping is required; we still escape defensively.
@@ -23,7 +25,10 @@ function addOp(path, value) {
  *
  * @param {Object} fields normalized generated fields (title, description, keywords,
  *   productCategory, campaign, channel, brand)
- * @param {Object} scope { company, status = 'approved' } — always applied
+ * @param {Object} scope { company, status = 'approved', allowedCountries, internalStatus }
+ *   — always applied. `allowedCountries` may be a single country code or an array
+ *   (normalized to string[] here); it defaults to `['global']` when omitted so an
+ *   asset is never accidentally written as invisible to every market.
  * @returns {Array<{op,path,value}>}
  */
 export function buildMetadataPatch(fields = {}, scope = {}) {
@@ -39,9 +44,15 @@ export function buildMetadataPatch(fields = {}, scope = {}) {
   if (fields.channel) ops.push(addOp(FIELD.CHANNEL, fields.channel));
   if (fields.brand) ops.push(addOp(FIELD.BRAND, fields.brand));
 
-  // Scope + approval are always stamped by the controller.
+  // Scope + approval are always stamped by the controller — never left to the model.
   if (scope.company) ops.push(addOp(FIELD.COMPANY, scope.company));
   ops.push(addOp(FIELD.STATUS, scope.status || STATUS_APPROVED));
+  const allowedCountries = scope.allowedCountries ?? 'global';
+  ops.push(addOp(
+    FIELD.ALLOWED_COUNTRIES,
+    Array.isArray(allowedCountries) ? allowedCountries : [allowedCountries],
+  ));
+  ops.push(addOp(FIELD.INTERNAL_STATUS, scope.internalStatus || STATUS_APPROVED));
 
   return ops;
 }

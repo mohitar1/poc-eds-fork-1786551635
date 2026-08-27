@@ -13,6 +13,11 @@ jobs:
       run:
         working-directory: cloudflare
     steps:
+    - name: Guard against fork deploying to shared production
+      if: github.repository != 'aem-showcase/assethub-spark'
+      run: |
+        echo "::warning::This repo is a fork of assethub-spark. Deploying to a fork-specific worker/route (not the shared spark-eds-production/frescopamedia.com) — see the 'Setup deployment' step below. This warning is a fail-safe only; the actual isolation comes from the --name/--route override."
+
     - uses: actions/checkout@v6
     - uses: actions/setup-node@v6
       with:
@@ -27,6 +32,24 @@ jobs:
         message="$(echo "${{ github.actor }}: $subject" | cut -c1-100)"
         echo "tag=$tag" >> "$GITHUB_OUTPUT"
         echo "message=$message" >> "$GITHUB_OUTPUT"
+
+        # Fork isolation: every fork of this template must deploy to its
+        # own Cloudflare worker/route on `main`, never to the origin's
+        # shared "spark-eds-production" / "frescopamedia.com" — otherwise
+        # two repos sharing a Cloudflare account would silently overwrite
+        # each other's production deploy. Only the origin repo deploys
+        # unmodified (empty override below); every fork gets a
+        # deterministic, repo-derived name/route instead. This mirrors
+        # the per-branch override build.yaml already does for PR previews
+        # (--name "spark-eds-pr-<number>"), just keyed by repo instead of
+        # PR number, since `main` pushes have no PR context.
+        if [ "${{ github.repository }}" = "aem-showcase/assethub-spark" ]; then
+          echo "deploy-override=" >> "$GITHUB_OUTPUT"
+        else
+          repo_slug=$(node -e 'process.stdout.write((process.argv[1] ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))' -- "${{ github.repository }}")
+          echo "repo-slug=$repo_slug" >> "$GITHUB_OUTPUT"
+          echo "deploy-override=--name spark-eds-$repo_slug --route $repo_slug.dev.frescopamedia.com/*" >> "$GITHUB_OUTPUT"
+        fi
 
     - run: npm ci
 
@@ -44,6 +67,7 @@ jobs:
         workingDirectory: cloudflare
         command: >-
           deploy --env production
+          ${{ steps.setup.outputs.deploy-override }}
           --tag "${{ steps.setup.outputs.tag }}"
           --message "${{ steps.setup.outputs.message }}"
 
@@ -53,7 +77,7 @@ jobs:
       with:
         token: '${{ github.token }}'
         deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-        environment-url: 'https://frescopamedia.com'
+        environment-url: '${{ github.repository == ''aem-showcase/assethub-spark'' && ''https://frescopamedia.com'' || format(''https://{0}.dev.frescopamedia.com'', steps.setup.outputs.repo-slug) }}'
         state: 'success'
 
     - name: Update deployment status (failure)

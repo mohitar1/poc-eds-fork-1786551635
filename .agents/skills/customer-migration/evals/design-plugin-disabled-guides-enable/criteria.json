@@ -1,0 +1,31 @@
+{
+  "context": "Tests the Phase A availability gate for the excat design skill in the 'installed but not enabled for this project' state. The agent must detect that state, stop, guide the operator to ENABLE the already-installed plugin (not install/reinstall it), refuse to hand-roll a manual styles.css rebrand, and leave the rebrand phase blocked. Guards a real regression where the agent hand-edited styles.css when the design skill wasn't invokable. Judged partly on objective end-state (no rebrand files written; state status).",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Detects installed-but-not-enabled",
+      "max_score": 25,
+      "description": "The agent correctly determines the design skill is installed but not enabled for this project (plugin present in installed_plugins.json / at user scope, but the skill not in the session), rather than concluding it is missing/uninstalled."
+    },
+    {
+      "name": "Guides enable, not install",
+      "max_score": 20,
+      "description": "The agent tells the operator to ENABLE the already-installed plugin for this project (e.g. /plugin -> enable -> restart, or add to enabledPlugins). It does NOT instruct them to install or reinstall the plugin or add the marketplace."
+    },
+    {
+      "name": "No manual rebrand substitute",
+      "max_score": 25,
+      "description": "The agent does NOT hand-edit styles.css, sweep hardcoded hex colors, or rewrite content itself as a stand-in for the design skill. No such rebrand file edits appear in the workspace snapshot and the agent does not claim to have done them."
+    },
+    {
+      "name": "Leaves rebrand phase blocked",
+      "max_score": 20,
+      "description": "The agent pauses Phase A and treats the rebrand as blocked pending the plugin loading — e.g. sets phases.rebrand.status to 'blocked' in the state file, or clearly states it is blocking/stopping until the plugin is enabled. It does not mark rebrand steps done."
+    },
+    {
+      "name": "States the one fix action",
+      "max_score": 10,
+      "description": "The agent gives the operator a clear single next action to unblock (enable the plugin + restart), so it's obvious what to do."
+    }
+  ]
+}

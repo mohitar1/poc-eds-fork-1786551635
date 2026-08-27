@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "intent": "full",
+  "customer": {
+    "name": "Aperture",
+    "githubOrg": "operator1",
+    "githubRepo": "poc-eds-fork-aperture",
+    "aemEnvId": null,
+    "authBypassActive": null,
+    "deployTarget": null
+  },
+  "phases": {
+    "rebrand": {
+      "status": "done",
+      "lastUpdated": "2026-08-27",
+      "steps": {
+        "brand-inputs-collected": "done",
+        "permissions-checked": "done",
+        "design-tokens-applied": "done",
+        "asset-colors-swept": "done",
+        "content-register-rewritten": "done",
+        "published": "done",
+        "landed-via-pr": "done",
+        "asset-color-sweep-verified": "done"
+      }
+    },
+    "backend-onboarding": {
+      "status": "pending",
+      "lastUpdated": null,
+      "scopeChoice": null,
+      "steps": {}
+    },
+    "asset-population": {
+      "status": "pending",
+      "lastUpdated": null,
+      "lane": null,
+      "customerKey": null,
+      "assetSourceUrl": null,
+      "steps": {}
+    }
+  }
+}

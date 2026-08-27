@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "intent": "full",
+  "customer": {
+    "name": "Disney",
+    "githubOrg": "operator1",
+    "githubRepo": "poc-eds-fork-disney",
+    "aemEnvId": "p3333-e4444",
+    "authBypassActive": true,
+    "deployTarget": "dedicated"
+  },
+  "phases": {
+    "rebrand": {
+      "status": "done",
+      "lastUpdated": "2026-08-27",
+      "steps": {
+        "brand-inputs-collected": "done",
+        "permissions-checked": "done",
+        "design-tokens-applied": "done",
+        "asset-colors-swept": "done",
+        "content-register-rewritten": "done",
+        "published": "done",
+        "landed-via-pr": "done",
+        "asset-color-sweep-verified": "done"
+      }
+    },
+    "backend-onboarding": {
+      "status": "in_progress",
+      "lastUpdated": "2026-08-27",
+      "scopeChoice": "local-no-login",
+      "steps": {
+        "node-version-check": "done",
+        "fork-identity-resolved": "done",
+        "code-sync-verified": "done",
+        "helix-url-and-readme-corrected": "done",
+        "tier-selected": "done",
+        "content-hub-creds-collected": "done",
+        "auth-mode-applied": "done",
+        "boot-verified": "done",
+        "deploy-bypass-gated": "pending",
+        "intake-file-generated": "pending",
+        "repo-identity-rename-applied": "pending",
+        "remote-secrets-pushed": "pending",
+        "remote-d1-migrated": "pending",
+        "ci-token-set": "done",
+        "real-auth-configured": "pending",
+        "deployed-via-merge": "pending"
+      }
+    },
+    "asset-population": {
+      "status": "done",
+      "lastUpdated": "2026-08-27",
+      "lane": null,
+      "customerKey": "disney",
+      "assetSourceUrl": null,
+      "steps": {
+        "customer-key-resolved": "done",
+        "author-access-verified": "done",
+        "assets-resolved": "done",
+        "metadata-generated": "done",
+        "metadata-written": "done",
+        "assets-published": "done",
+        "scope-config-written": "done",
+        "scope-applied-locally": "done",
+        "search-scope-verified": "done",
+        "scope-deployed": "not-requested"
+      }
+    }
+  }
+}
