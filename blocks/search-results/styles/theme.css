@@ -4,8 +4,8 @@
 
 :root {
   /* Primary colors — align with global :root */
-  --primary-color-hover: #065E93;
-  --primary-color-active: #054A75;
+  --primary-color-hover: #143C82;
+  --primary-color-active: #0F2C61;
   --primary-color-disabled: var(--color-neutral-300, #e8e8e8);
 
   /* Color scales (Light mode) */
@@ -19,14 +19,14 @@
   --purple-200: rgb(8 121 190 / 20%);
   --purple-300: rgb(8 121 190 / 30%);
   --purple-400: var(--accent-secondary);
-  --purple-500: #0879BE;
-  --purple-600: #065E93;
+  --purple-500: #2A60B3;
+  --purple-600: #143C82;
   --red-100: rgb(8 121 190 / 12%);
   --red-200: rgb(8 121 190 / 25%);
   --red-300: var(--color-red);
   --red-400: var(--color-red);
-  --red-500: #065E93;
-  --red-600: #054A75;
+  --red-500: #143C82;
+  --red-600: #0F2C61;
   --highlight-hover: rgb(0 0 0 / 7%);
   --highlight-pressed: rgb(0 0 0 / 15%);
 
@@ -48,13 +48,13 @@
   --button-background: var(--gray-50);
   --button-background-pressed: var(--light-color);
   --highlight-background: var(--primary-color);
-  --highlight-background-pressed: #065E93;
+  --highlight-background-pressed: #143C82;
   --highlight-background-invalid: var(--color-red);
   --highlight-foreground: white;
   --highlight-foreground-pressed: var(--light-color);
   --highlight-overlay: rgb(8 121 190 / 15%);
   --invalid-color: var(--color-red);
-  --invalid-color-pressed: #065E93;
+  --invalid-color-pressed: #143C82;
 }
 
 /* Dark mode */
@@ -68,15 +68,15 @@
     --gray-400: #848484;
     --gray-500: #a7a7a7;
     --gray-600: #cfcfcf;
-    --purple-100: #054A75;
-    --purple-200: #065E93;
-    --purple-300: #0879BE;
+    --purple-100: #0F2C61;
+    --purple-200: #143C82;
+    --purple-300: #2A60B3;
     --purple-400: #3d97cf;
     --purple-500: #7bbce0;
     --purple-600: #b0d8ec;
-    --red-100: #054A75;
-    --red-200: #065E93;
-    --red-300: #0879BE;
+    --red-100: #0F2C61;
+    --red-200: #143C82;
+    --red-300: #2A60B3;
     --red-400: #3d97cf;
     --red-500: #7bbce0;
     --red-600: #b0d8ec;

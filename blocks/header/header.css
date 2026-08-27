@@ -321,7 +321,7 @@ header nav .nav-brand img {
   height: auto;
 }
 
-/* Brand logo authored as an EDS icon (:urbn-icon:) - let it render full size */
+/* Brand logo authored as an EDS icon (:disney-icon:) - let it render full size */
 header .nav-brand p {
   margin: 0;
 }
@@ -698,7 +698,7 @@ header nav .nav-tools .nav-cart-icon button:focus-visible,
 header nav .nav-tools .nav-download-icon button:focus-visible,
 header nav .nav-tools .nav-message-icon button:focus-visible,
 header nav .nav-tools .nav-reports-icon button:focus-visible {
-  box-shadow: var(--focus-ring, 0 0 0 3px #0879BE);
+  box-shadow: var(--focus-ring, 0 0 0 3px #2A60B3);
   border-radius: 6px;
 }
 
