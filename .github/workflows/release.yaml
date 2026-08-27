@@ -15,6 +15,7 @@ jobs:
     steps:
     - name: Guard against fork deploying to shared production
       if: github.repository != 'aem-showcase/assethub-spark'
+      working-directory: .
       run: |
         echo "::warning::This repo is a fork of assethub-spark. Deploying to a fork-specific worker/route (not the shared spark-eds-production/frescopamedia.com) — see the 'Setup deployment' step below. This warning is a fail-safe only; the actual isolation comes from the --name/--route override."
 
